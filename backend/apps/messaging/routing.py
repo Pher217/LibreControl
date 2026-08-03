@@ -1,6 +1,6 @@
 """The single messaging app of choice.
 
-OpenRemote-Control is a single-platform aggregator: the operator picks ONE
+LibreControl is a single-platform aggregator: the operator picks ONE
 messaging app and every session and prompt they follow flows to it. Pick
 Telegram and it's a Telegram-only aggregator; pick WhatsApp and everything goes
 to WhatsApp. Nothing is broadcast to multiple platforms.
@@ -22,11 +22,11 @@ TELEGRAM = "telegram"
 GATEWAY_PLATFORMS = ("whatsapp", "slack", "discord", "signal", "imessage")
 
 _RECIPIENT_SETTING = {
-    "whatsapp": "ORC_PROMPT_WHATSAPP",
-    "slack": "ORC_PROMPT_SLACK",
-    "discord": "ORC_PROMPT_DISCORD",
-    "signal": "ORC_PROMPT_SIGNAL",
-    "imessage": "ORC_PROMPT_IMESSAGE",
+    "whatsapp": "LCTL_PROMPT_WHATSAPP",
+    "slack": "LCTL_PROMPT_SLACK",
+    "discord": "LCTL_PROMPT_DISCORD",
+    "signal": "LCTL_PROMPT_SIGNAL",
+    "imessage": "LCTL_PROMPT_IMESSAGE",
 }
 
 VALID_PLATFORMS = (TELEGRAM, *GATEWAY_PLATFORMS)
@@ -37,7 +37,7 @@ def active_platform() -> str:
 
     Falls back to ``telegram`` when unset or set to an unknown value.
     """
-    p = (getattr(settings, "ORC_MESSAGING_PLATFORM", "") or TELEGRAM).strip().lower()
+    p = (getattr(settings, "LCTL_MESSAGING_PLATFORM", "") or TELEGRAM).strip().lower()
     return p if p in VALID_PLATFORMS else TELEGRAM
 
 
@@ -49,13 +49,13 @@ def is_telegram() -> bool:
 def active_recipient() -> str:
     """Return the recipient/chat id for the active platform, or '' if unconfigured.
 
-    For Telegram this is ``ORC_PROMPT_CHAT_ID`` (which itself falls back to
+    For Telegram this is ``LCTL_PROMPT_CHAT_ID`` (which itself falls back to
     ``TELEGRAM_FORUM_CHAT_ID``). For a gateway platform it is that platform's
-    ``ORC_PROMPT_<PLATFORM>`` setting.
+    ``LCTL_PROMPT_<PLATFORM>`` setting.
     """
     platform = active_platform()
     if platform == TELEGRAM:
-        return getattr(settings, "ORC_PROMPT_CHAT_ID", "") or getattr(
+        return getattr(settings, "LCTL_PROMPT_CHAT_ID", "") or getattr(
             settings, "TELEGRAM_FORUM_CHAT_ID", ""
         )
     return getattr(settings, _RECIPIENT_SETTING[platform], "")

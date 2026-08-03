@@ -81,7 +81,7 @@ jobs:
         working-directory: host-agent
         run: python -m pytest
 
-  orc-mcp:
+  librecontrol-mcp:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,13 +89,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: connectors/orc-mcp/pyproject.toml
-      - name: Install orc-mcp dependencies
+          cache-dependency-path: connectors/librecontrol-mcp/pyproject.toml
+      - name: Install librecontrol-mcp dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e 'connectors/orc-mcp[dev]'
+          python -m pip install -e 'connectors/librecontrol-mcp[dev]'
       - name: Run tests
-        run: python -m pytest connectors/orc-mcp/tests -q
+        run: python -m pytest connectors/librecontrol-mcp/tests -q
 
   messaging-gateway:
     runs-on: ubuntu-latest

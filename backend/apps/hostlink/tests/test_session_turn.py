@@ -348,7 +348,7 @@ class TestResyncTailSessions:
     async def test_pending_headless_thread_is_resynced(self):
         """
         GIVEN a PENDING headless thread (dispatched but no activity yet — the
-              state every /openremote-control thread sits in at first)
+              state every /librecontrol thread sits in at first)
         WHEN the reconnect resync runs
         THEN a tail.start frame IS sent for it (a daemon restart must not
              silently drop the mirror of a freshly-dispatched session).

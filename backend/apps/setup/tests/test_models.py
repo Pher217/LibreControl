@@ -508,31 +508,31 @@ class TestTelegramChallenge:
 class TestSetupTokenTTLFromSettings:
     def test_ttl_override_expires_at_least_4_minutes_out(self):
         """
-        GIVEN ORC_SETUP_TOKEN_TTL_MINUTES=5 via override_settings
+        GIVEN LCTL_SETUP_TOKEN_TTL_MINUTES=5 via override_settings
         WHEN a token is issued
         THEN expires_at is more than 4 minutes from now
         """
-        with override_settings(ORC_SETUP_TOKEN_TTL_MINUTES=5):
+        with override_settings(LCTL_SETUP_TOKEN_TTL_MINUTES=5):
             obj, _raw = SetupToken.issue()
         assert obj.expires_at > timezone.now() + timedelta(minutes=4)
 
     def test_ttl_override_expires_less_than_6_minutes_out(self):
         """
-        GIVEN ORC_SETUP_TOKEN_TTL_MINUTES=5 via override_settings
+        GIVEN LCTL_SETUP_TOKEN_TTL_MINUTES=5 via override_settings
         WHEN a token is issued
         THEN expires_at is less than 6 minutes from now
         """
-        with override_settings(ORC_SETUP_TOKEN_TTL_MINUTES=5):
+        with override_settings(LCTL_SETUP_TOKEN_TTL_MINUTES=5):
             obj, _raw = SetupToken.issue()
         assert obj.expires_at < timezone.now() + timedelta(minutes=6)
 
     def test_issue_ttl_argument_overrides_settings(self):
         """
-        GIVEN ORC_SETUP_TOKEN_TTL_MINUTES=5 via override_settings
+        GIVEN LCTL_SETUP_TOKEN_TTL_MINUTES=5 via override_settings
         WHEN issue(ttl=timedelta(minutes=90)) is called
         THEN expires_at is more than 89 minutes from now — the explicit ttl wins
         """
-        with override_settings(ORC_SETUP_TOKEN_TTL_MINUTES=5):
+        with override_settings(LCTL_SETUP_TOKEN_TTL_MINUTES=5):
             obj, _raw = SetupToken.issue(ttl=timedelta(minutes=90))
         assert obj.expires_at > timezone.now() + timedelta(minutes=89)
 

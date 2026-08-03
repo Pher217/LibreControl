@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stand-in for the claude binary speaking the stream-json protocol.
 
-Used by tests via ORC_CLAUDE_BIN. Behavior controlled by FAKE_CLAUDE_MODE env
+Used by tests via LCTL_CLAUDE_BIN. Behavior controlled by FAKE_CLAUDE_MODE env
 var: 'echo' (default), 'crash_after_first', or 'tool_step'.
 """
 from __future__ import annotations

@@ -45,7 +45,7 @@ class InteractiveEngine:
         self._started_once = bool(started)
 
     def _resolve_bin(self) -> str:
-        return os.environ.get("ORC_CLAUDE_BIN") or "claude"
+        return os.environ.get("LCTL_CLAUDE_BIN") or "claude"
 
     def _spawn(self, resume: bool) -> None:
         sid = self.claude_session_id

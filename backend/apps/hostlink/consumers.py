@@ -110,7 +110,7 @@ class HostDaemonConsumer(AsyncJsonWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Drain pending deliveries before tearing down so already-recorded
-        # turns/intros aren't lost when a short-lived control ws (`orc-host
+        # turns/intros aren't lost when a short-lived control ws (`librectl
         # headless` registration) or a churning daemon ws closes mid-stream
         # (the "input worked but no reply showed up" bug).
         #
@@ -199,8 +199,8 @@ class HostDaemonConsumer(AsyncJsonWebsocketConsumer):
         # lines) for a TUI app like Claude — NOT clean conversation turns. Record
         # them as debug telemetry only (source="pty_screen") and do NOT deliver to
         # Telegram. Clean turns for a driveable session arrive via the headless
-        # reply path (session.headless_reply → _deliver_to_telegram). A raw `orc
-        # run` TUI session has no clean-output stream — drive via /openremote-control
+        # reply path (session.headless_reply → _deliver_to_telegram). A raw `librectl
+        # run` TUI session has no clean-output stream — drive via /librecontrol
         # (headless) for write+stream.
         await record_turn(thread, "assistant", text, source="pty_screen")
 

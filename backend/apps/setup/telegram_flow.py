@@ -70,9 +70,9 @@ def _call(token: str, method: str, params: dict | None = None) -> dict:
         if resp.status_code == 409 or "terminated by other getupdates" in description.lower():
             raise TelegramError(
                 "Another process is already receiving this bot's updates. "
-                "Stop the running OpenRemote-Control bot before detecting the "
+                "Stop the running LibreControl bot before detecting the "
                 "group — Docker Compose: `docker compose stop telegram-bot`; "
-                "launchd: `launchctl bootout gui/$(id -u)/com.openremote.bot` "
+                "launchd: `launchctl bootout gui/$(id -u)/com.librecontrol.bot` "
                 "— then try again."
             ) from None
         # Telegram's own error descriptions never contain the token, so

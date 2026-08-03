@@ -64,7 +64,7 @@ def _qs(host, raw_token):
 class TestHostDaemonConsumer:
     @pytest.fixture(autouse=True)
     def _override(self, settings):
-        settings.ORC_ENROLL_SECRET = ENROLL_SECRET
+        settings.LCTL_ENROLL_SECRET = ENROLL_SECRET
         settings.CACHES = LOCMEM_CACHES
 
     async def test_valid_credentials_accepted(self, host, host_token):

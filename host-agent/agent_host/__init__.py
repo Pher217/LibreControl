@@ -1,5 +1,5 @@
 """
-agent_host — Host-agent daemon for OpenRemote Control.
+agent_host — Host-agent daemon for LibreControl.
 
 Public re-exports from the safety core and PTY session manager.
 Importing this package does NOT import libtmux; that import is deferred

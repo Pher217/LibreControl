@@ -1,6 +1,6 @@
 """start_session binds the driveable thread to the caller's own session.
 
-When `/openremote-control` passes the calling Claude Code session id
+When `/librecontrol` passes the calling Claude Code session id
 (CLAUDE_CODE_SESSION_ID), the dispatched chat must drive THAT session — a
 Telegram reply runs `claude -p --resume <id>` and continues this conversation,
 rather than spinning up a fresh session. Without an id, a new session is minted.
@@ -17,8 +17,8 @@ from apps.threads.models import Thread
 
 @pytest.fixture
 def telegram_forum(settings):
-    settings.ORC_MESSAGING_PLATFORM = "telegram"
-    settings.ORC_PROMPT_CHAT_ID = "-100999"
+    settings.LCTL_MESSAGING_PLATFORM = "telegram"
+    settings.LCTL_PROMPT_CHAT_ID = "-100999"
     settings.TELEGRAM_FORUM_CHAT_ID = "-100999"
     return -100999
 

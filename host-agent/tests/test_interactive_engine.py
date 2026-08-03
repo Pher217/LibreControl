@@ -1,7 +1,7 @@
 """Tests for agent_host/interactive_engine.py — InteractiveEngine subprocess manager.
 
 Drives the engine against tests/fake_claude.py (a stand-in claude binary speaking
-the stream-json protocol) selected via ORC_CLAUDE_BIN. Behavior of the fake is
+the stream-json protocol) selected via LCTL_CLAUDE_BIN. Behavior of the fake is
 controlled by FAKE_CLAUDE_MODE: echo | crash_after_first | tool_step.
 """
 from __future__ import annotations
@@ -39,7 +39,7 @@ class Collector:
 
 
 def _make_engine(monkeypatch, mode, collector, cwd=None):
-    monkeypatch.setenv("ORC_CLAUDE_BIN", FAKE)
+    monkeypatch.setenv("LCTL_CLAUDE_BIN", FAKE)
     monkeypatch.setenv("FAKE_CLAUDE_MODE", mode)
     return InteractiveEngine("fake-sess", cwd or os.getcwd(), collector.on_event, collector.on_turn_complete)
 
@@ -187,7 +187,7 @@ def test_started_hint_first_spawn_uses_resume(monkeypatch):
     """
     from agent_host.interactive_engine import InteractiveEngine
 
-    monkeypatch.setenv("ORC_CLAUDE_BIN", FAKE)
+    monkeypatch.setenv("LCTL_CLAUDE_BIN", FAKE)
     monkeypatch.setenv("FAKE_CLAUDE_MODE", "echo")
     col = Collector()
     engine = InteractiveEngine(

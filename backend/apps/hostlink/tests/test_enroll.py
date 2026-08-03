@@ -23,20 +23,20 @@ VALID_PAYLOAD = {
 
 @pytest.mark.django_db
 class TestEnrollView:
-    @override_settings(ORC_ENROLL_SECRET="")
+    @override_settings(LCTL_ENROLL_SECRET="")
     def test_503_when_secret_unset(self, client):
         """
-        GIVEN ORC_ENROLL_SECRET is empty
+        GIVEN LCTL_ENROLL_SECRET is empty
         WHEN POST /api/hostlink/enroll is called
         THEN it returns 503
         """
         response = client.post(ENROLL_URL, VALID_PAYLOAD, format="json")
         assert response.status_code == 503
 
-    @override_settings(ORC_ENROLL_SECRET=VALID_SECRET)
+    @override_settings(LCTL_ENROLL_SECRET=VALID_SECRET)
     def test_401_when_wrong_secret(self, client):
         """
-        GIVEN ORC_ENROLL_SECRET is set
+        GIVEN LCTL_ENROLL_SECRET is set
         WHEN POST /api/hostlink/enroll is called with a wrong secret
         THEN it returns 401
         """
@@ -44,10 +44,10 @@ class TestEnrollView:
         response = client.post(ENROLL_URL, payload, format="json")
         assert response.status_code == 401
 
-    @override_settings(ORC_ENROLL_SECRET=VALID_SECRET)
+    @override_settings(LCTL_ENROLL_SECRET=VALID_SECRET)
     def test_200_creates_host_and_returns_token(self, client):
         """
-        GIVEN ORC_ENROLL_SECRET is set and the correct secret is provided
+        GIVEN LCTL_ENROLL_SECRET is set and the correct secret is provided
         WHEN POST /api/hostlink/enroll is called
         THEN it returns 200 with host_id, host_slug, and token
         """
@@ -59,17 +59,17 @@ class TestEnrollView:
         assert "token" in data
         assert len(data["token"]) > 10
 
-    @override_settings(ORC_ENROLL_SECRET=VALID_SECRET)
+    @override_settings(LCTL_ENROLL_SECRET=VALID_SECRET)
     def test_creates_host_in_db(self, client):
         """
-        GIVEN ORC_ENROLL_SECRET is set
+        GIVEN LCTL_ENROLL_SECRET is set
         WHEN POST /api/hostlink/enroll is called with a new hostname
         THEN a Host is created in the database
         """
         client.post(ENROLL_URL, VALID_PAYLOAD, format="json")
         assert Host.objects.filter(name="my-dev-box").exists()
 
-    @override_settings(ORC_ENROLL_SECRET=VALID_SECRET)
+    @override_settings(LCTL_ENROLL_SECRET=VALID_SECRET)
     def test_idempotent_for_same_hw_uuid(self, client):
         """
         GIVEN the same hw_uuid is enrolled twice
@@ -80,7 +80,7 @@ class TestEnrollView:
         client.post(ENROLL_URL, VALID_PAYLOAD, format="json")
         assert Host.objects.filter(capabilities__hw_uuid="hw-uuid-abc-123").count() == 1
 
-    @override_settings(ORC_ENROLL_SECRET=VALID_SECRET)
+    @override_settings(LCTL_ENROLL_SECRET=VALID_SECRET)
     def test_token_verifies(self, client):
         """
         GIVEN a successful enroll

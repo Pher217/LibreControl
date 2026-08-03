@@ -218,10 +218,10 @@ def _compose_session_name(tool: str, workspace_root: str, name: str) -> str:
     """Readable session name.
 
     An explicit operator-supplied *name* is used verbatim (their choice). When no
-    name is given (the bare ``/openremote-control`` dispatch), auto-compose
+    name is given (the bare ``/librecontrol`` dispatch), auto-compose
     ``agent · repo · time``:
     - agent: the coding tool (claude/codex/…); falls back to ``session`` when the
-      connector reported none (orc-mcp sends ``unknown`` when ``$ORC_TOOL`` is unset).
+      connector reported none (librecontrol-mcp sends ``unknown`` when ``$LCTL_TOOL`` is unset).
     - repo: basename of the workspace root the agent is running in.
     - time: a timestamp, so two un-named sessions in the same repo don't collide.
     """
@@ -317,9 +317,9 @@ def start_session(
 ) -> dict:
     """Start a new remote-control session and dispatch it to the operator's chat.
 
-    This is the backend side of the universal `/openremote-control` command, which
+    This is the backend side of the universal `/librecontrol` command, which
     is invoked from inside the coding agent (Claude Code / Codex / Cursor …) via the
-    orc-mcp bridge. It creates a fresh named thread for this connector, rebinds the
+    librecontrol-mcp bridge. It creates a fresh named thread for this connector, rebinds the
     connector to it (so subsequent notify/ask/approve route to this session), and
     announces it to the operator's messaging app(s) of choice.
 

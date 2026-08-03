@@ -1,7 +1,7 @@
 [project]
-name = "openremote-control-host-agent"
+name = "librecontrol-host-agent"
 version = "0.0.1"
-description = "Host agent daemon for OpenRemote Control"
+description = "Host agent daemon for LibreControl"
 requires-python = ">=3.13"
 dependencies = [
     "websockets>=13.0",
@@ -31,7 +31,7 @@ unix = ["ptyprocess>=0.7"]
 windows = ["pywinpty>=2.0"]
 
 [project.scripts]
-orc-host = "agent_host.cli:main"
+librectl = "agent_host.cli:main"
 
 [build-system]
 requires = ["hatchling>=1.20"]

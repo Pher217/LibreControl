@@ -1,8 +1,8 @@
 """Ed25519 identity and request signing for the ORC connector.
 
 Each connector install has a unique keypair. The private key lives at
-~/.config/openremote-control/connector_key (PEM), and metadata alongside it in
-connector.json. Every backend request carries five X-ORC-* headers whose
+~/.config/librecontrol/connector_key (PEM), and metadata alongside it in
+connector.json. Every backend request carries five X-LCTL-* headers whose
 signature covers: METHOD, PATH, sha256hex(body), timestamp, nonce.
 """
 
@@ -25,7 +25,7 @@ from cryptography.hazmat.primitives.serialization import (
 
 
 def _config_dir() -> Path:
-    return Path.home() / ".config" / "openremote-control"
+    return Path.home() / ".config" / "librecontrol"
 
 
 def _key_file() -> Path:
@@ -52,7 +52,7 @@ def save_identity(
     key_id: str,
     backend_url: str,
 ) -> None:
-    """Persist the private key + metadata to ~/.config/openremote-control/."""
+    """Persist the private key + metadata to ~/.config/librecontrol/."""
     config_dir = _config_dir()
     config_dir.mkdir(parents=True, exist_ok=True)
 
@@ -120,7 +120,7 @@ def sign_headers(
     path: str,
     body: bytes,
 ) -> dict[str, str]:
-    """Return the five X-ORC-* headers for one request.
+    """Return the five X-LCTL-* headers for one request.
 
     The canonical message (signed bytes) is exactly:
         METHOD\\nPATH\\nsha256hex(body)\\nTIMESTAMP\\nNONCE
@@ -132,9 +132,9 @@ def sign_headers(
     sig_raw = priv.sign(msg)
     sig_b64 = base64.b64encode(sig_raw).decode()
     return {
-        "X-ORC-Connector-Id": connector_id,
-        "X-ORC-Key-Id": key_id,
-        "X-ORC-Timestamp": ts,
-        "X-ORC-Nonce": nonce,
-        "X-ORC-Signature": sig_b64,
+        "X-LCTL-Connector-Id": connector_id,
+        "X-LCTL-Key-Id": key_id,
+        "X-LCTL-Timestamp": ts,
+        "X-LCTL-Nonce": nonce,
+        "X-LCTL-Signature": sig_b64,
     }

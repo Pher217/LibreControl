@@ -81,7 +81,7 @@ class Pairing(models.Model):
 class ConnectorInstance(models.Model):
     """Records which connector made each call (identity binding v1).
     Full per-connector keypair authentication is a UC0 item — for now the
-    shared ORC_CONNECTOR_TOKEN is the only gate; this model provides the
+    shared LCTL_CONNECTOR_TOKEN is the only gate; this model provides the
     audit trail and thread binding.
     """
 

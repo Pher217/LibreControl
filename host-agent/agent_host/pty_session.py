@@ -1,5 +1,5 @@
 """
-pty_session.py — Thin tmux-backed PTY session manager for 'orc run'.
+pty_session.py — Thin tmux-backed PTY session manager for 'librectl run'.
 
 Legitimacy note
 ---------------
@@ -43,13 +43,13 @@ log = logging.getLogger(__name__)
 # Process-local registry of tmux sessions THIS process started. tmux itself does
 # not record which OS process created a session, so ownership is tracked here.
 # pty.inject is broadcast to every host ws connection in the host group (the
-# observe daemon plus each `orc run`); without an ownership check, every
+# observe daemon plus each `librectl run`); without an ownership check, every
 # connection runs `tmux send-keys` and the keystrokes are injected N times. The
 # owning process is the one that called start() for the session.
 #
 # Persistence (daemon only): the long-lived daemon enables a file-backed registry
 # via configure_persistence() so its session.start sessions stay injectable across
-# daemon restarts (the tmux sessions outlive the process). `orc run` does NOT
+# daemon restarts (the tmux sessions outlive the process). `librectl run` does NOT
 # persist — its registry is ephemeral and dies with the (session-scoped) process.
 _started_sessions: set[str] = set()
 _persist_path: Path | None = None

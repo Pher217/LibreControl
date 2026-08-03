@@ -6,8 +6,18 @@ and the API is not yet stable.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-03
+
+The rename release. OpenRemote Control becomes **LibreControl**, and the first-run
+setup wizard gains a guided Telegram connection flow. Upgrading is a breaking
+change for enrolled hosts — see the migration note below.
+
+### Changed
+- **Project renamed: OpenRemote Control → LibreControl.** The CLI `orc-host` is now `librectl`; the MCP package `orc-mcp` is now `librecontrol-mcp`; all `ORC_*` environment variables are now `LCTL_*`; the config directory moved from `~/.config/openremote-control/` to `~/.config/librecontrol/`. **Enrolled hosts must re-run `librectl enroll`** — the Ed25519 connector key does not migrate.
+- The Node sidecar package and its Docker image tag are now `librecontrol-messaging-gateway` (was `orc-messaging-gateway`); rebuild with `docker compose -f deploy/app/docker-compose.yml build`.
+
 ### Added
-- First-run setup wizard backend (`backend/apps/setup`): one-time token gate, singleton stage machine, and an allowlisted atomic `.env` writer ([#120](https://github.com/Pher217/OpenRemote-Control/pull/120)).
+- First-run setup wizard backend (`backend/apps/setup`): one-time token gate, singleton stage machine, and an allowlisted atomic `.env` writer ([#120](https://github.com/Pher217/LibreControl/pull/120)).
 - Setup wizard Telegram connection flow: `POST /api/setup/telegram/token` validates a pasted bot token via getMe, `POST /api/setup/telegram/discover` finds the operator's group via getUpdates, and the `/setup` page now guides both steps instead of only reporting state.
 
 ### Security
@@ -19,32 +29,32 @@ and the API is not yet stable.
 First tagged release. Universal cross-tool `/remote-control`: dispatch any MCP-capable coding agent (Claude Code, Codex, and others) to a chat topic you already supervise, drive it from there, and stay in sync across every machine you enrol.
 
 ### Added — public launch & onboarding
-- [#108](https://github.com/Pher217/OpenRemote-Control/pull/108) — one-command `quickstart.sh` onboarding.
-- [#105](https://github.com/Pher217/OpenRemote-Control/pull/105) / [#106](https://github.com/Pher217/OpenRemote-Control/pull/106) / [#109](https://github.com/Pher217/OpenRemote-Control/pull/109) / [#115](https://github.com/Pher217/OpenRemote-Control/pull/115) — README repositioned as universal/cross-tool/one-inbox; status badges, demo GIF/screenshot.
-- [#98](https://github.com/Pher217/OpenRemote-Control/pull/98) — OSS-readiness audit closed: green CI, security docs, no personal data.
-- [#99](https://github.com/Pher217/OpenRemote-Control/pull/99) / [#100](https://github.com/Pher217/OpenRemote-Control/pull/100) — CI hardening (Valkey healthcheck, last lint violations) — main CI green.
+- [#108](https://github.com/Pher217/LibreControl/pull/108) — one-command `quickstart.sh` onboarding.
+- [#105](https://github.com/Pher217/LibreControl/pull/105) / [#106](https://github.com/Pher217/LibreControl/pull/106) / [#109](https://github.com/Pher217/LibreControl/pull/109) / [#115](https://github.com/Pher217/LibreControl/pull/115) — README repositioned as universal/cross-tool/one-inbox; status badges, demo GIF/screenshot.
+- [#98](https://github.com/Pher217/LibreControl/pull/98) — OSS-readiness audit closed: green CI, security docs, no personal data.
+- [#99](https://github.com/Pher217/LibreControl/pull/99) / [#100](https://github.com/Pher217/LibreControl/pull/100) — CI hardening (Valkey healthcheck, last lint violations) — main CI green.
 - Repo went public: branch protection, secret scanning, and private vulnerability reporting enabled.
 
 ### Added — Codex support
-- [#110](https://github.com/Pher217/OpenRemote-Control/pull/110) — drive Codex sessions from chat (`codex exec resume`-based engine, mirroring the Claude interactive engine).
-- [#111](https://github.com/Pher217/OpenRemote-Control/pull/111) — bind `/openremote-control` to your current Codex session (forked-snapshot handoff, with an explicit caveat that the editor won't see phone-driven turns).
+- [#110](https://github.com/Pher217/LibreControl/pull/110) — drive Codex sessions from chat (`codex exec resume`-based engine, mirroring the Claude interactive engine).
+- [#111](https://github.com/Pher217/LibreControl/pull/111) — bind `/openremote-control` to your current Codex session (forked-snapshot handoff, with an explicit caveat that the editor won't see phone-driven turns).
 
 ### Added — multi-host
-- [#112](https://github.com/Pher217/OpenRemote-Control/pull/112) — configurable daphne bind host (`ORC_BIND_HOST`) for LAN reachability from a second machine.
-- [#113](https://github.com/Pher217/OpenRemote-Control/pull/113) — route driveable sessions to the caller's own host by hostname match, fixing dispatch silently breaking the moment a second host enrols.
+- [#112](https://github.com/Pher217/LibreControl/pull/112) — configurable daphne bind host (`ORC_BIND_HOST`) for LAN reachability from a second machine.
+- [#113](https://github.com/Pher217/LibreControl/pull/113) — route driveable sessions to the caller's own host by hostname match, fixing dispatch silently breaking the moment a second host enrols.
 
 ### Fixed — dispatch reliability
-- [#114](https://github.com/Pher217/OpenRemote-Control/pull/114) — dedup `/openremote-control` re-dispatch for an already-running session (was creating a second Telegram topic per redispatch); silent Telegram-topic auto-recreation now logs and checks for a sibling owner instead of minting a duplicate; capability-based drive gating (`CLAUDE_CODE_ENTRYPOINT`) marks VSCode-extension-hosted sessions non-driveable instead of silently offering broken write-drive.
-- [#116](https://github.com/Pher217/OpenRemote-Control/pull/116) — closes a topic-creation race the #114 advisory lock didn't cover (two concurrent dispatches for one session could still both create a topic); tightens the sibling-topic-owner check to active threads in the same forum.
+- [#114](https://github.com/Pher217/LibreControl/pull/114) — dedup `/openremote-control` re-dispatch for an already-running session (was creating a second Telegram topic per redispatch); silent Telegram-topic auto-recreation now logs and checks for a sibling owner instead of minting a duplicate; capability-based drive gating (`CLAUDE_CODE_ENTRYPOINT`) marks VSCode-extension-hosted sessions non-driveable instead of silently offering broken write-drive.
+- [#116](https://github.com/Pher217/LibreControl/pull/116) — closes a topic-creation race the #114 advisory lock didn't cover (two concurrent dispatches for one session could still both create a topic); tightens the sibling-topic-owner check to active threads in the same forum.
 
 ### Added — write+stream driving wave (PRs #91–#97, ~800 tests passing)
-- [#91](https://github.com/Pher217/OpenRemote-Control/pull/91) — `/openremote-control` can drive *this* coding session by resuming `CLAUDE_CODE_SESSION_ID`.
-- [#93](https://github.com/Pher217/OpenRemote-Control/pull/93) — scoped transcript tail mirrors editor-typed turns to chat (session-bridge phase 1).
-- [#94](https://github.com/Pher217/OpenRemote-Control/pull/94) — user turns stay visible through drive suppression; pending threads resync.
-- [#95](https://github.com/Pher217/OpenRemote-Control/pull/95) — persistent interactive engine (`ORC_HEADLESS_ENGINE=interactive`): one long-lived `claude -p` stream-json process per session, no per-turn respawn.
-- [#96](https://github.com/Pher217/OpenRemote-Control/pull/96) — fresh interactive engines resume existing sessions (restart-survival gate fix).
-- [#97](https://github.com/Pher217/OpenRemote-Control/pull/97) — Telegram bot liveness watchdog self-heals a silent `getUpdates` stall.
-- [#92](https://github.com/Pher217/OpenRemote-Control/pull/92) — dependency bump: `redis` requirement widened to `>=5.0,<9` in `backend`.
+- [#91](https://github.com/Pher217/LibreControl/pull/91) — `/openremote-control` can drive *this* coding session by resuming `CLAUDE_CODE_SESSION_ID`.
+- [#93](https://github.com/Pher217/LibreControl/pull/93) — scoped transcript tail mirrors editor-typed turns to chat (session-bridge phase 1).
+- [#94](https://github.com/Pher217/LibreControl/pull/94) — user turns stay visible through drive suppression; pending threads resync.
+- [#95](https://github.com/Pher217/LibreControl/pull/95) — persistent interactive engine (`ORC_HEADLESS_ENGINE=interactive`): one long-lived `claude -p` stream-json process per session, no per-turn respawn.
+- [#96](https://github.com/Pher217/LibreControl/pull/96) — fresh interactive engines resume existing sessions (restart-survival gate fix).
+- [#97](https://github.com/Pher217/LibreControl/pull/97) — Telegram bot liveness watchdog self-heals a silent `getUpdates` stall.
+- [#92](https://github.com/Pher217/LibreControl/pull/92) — dependency bump: `redis` requirement widened to `>=5.0,<9` in `backend`.
 
 ### Added — Universal Aggregator backend (code-complete)
 - Multi-runtime **observe** for Claude Code, Codex, and Gemini via a pluggable runtime registry. (Removed — see below.)
@@ -61,7 +71,7 @@ First tagged release. Universal cross-tool `/remote-control`: dispatch any MCP-c
 - The multi-runtime, read-only `observe` watcher and its per-agent runtime adapters
   (`apps.observe.runtimes`) — every chat is now write+stream by default, so the
   read-only path was dead weight. `observe` now only holds turn persistence and
-  chat delivery for driven sessions ([PR #90](https://github.com/Pher217/OpenRemote-Control/pull/90)).
+  chat delivery for driven sessions ([PR #90](https://github.com/Pher217/LibreControl/pull/90)).
 
 ### Changed
 - Routed security reports through GitHub private vulnerability reporting instead of a placeholder email.
