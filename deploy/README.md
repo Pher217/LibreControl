@@ -117,7 +117,7 @@ docker compose -f deploy/app/docker-compose.yml build
 ```
 
 This compiles the Django image (collectstatic at build time, baked in) and the
-`orc-messaging-gateway` Node.js image.
+`librecontrol-messaging-gateway` Node.js image.
 
 ### 3b. Run migrations
 
