@@ -4,7 +4,7 @@ Thank you for your interest in this project. **The backend foundation is impleme
 
 1. **Add a per-provider drive engine or chat surface.** Contributions are wanted for per-provider drive engines and chat surfaces; open a discussion describing the tool's session lifecycle, the auth modes it supports, and the events/hooks it exposes.
 2. **Test the deploy path** on your own self-hosted infrastructure and report where the docs fall short — the deploy runbook is being written now, and real-world friction is invaluable.
-3. **Improve the `orc-mcp` install docs** for Cursor, Codex, Claude Code, Copilot, and Kiro (see [`connectors/orc-mcp/README.md`](connectors/orc-mcp/README.md)).
+3. **Improve the `librecontrol-mcp` install docs** for Cursor, Codex, Claude Code, Copilot, and Kiro (see [`connectors/librecontrol-mcp/README.md`](connectors/librecontrol-mcp/README.md)).
 4. **Harden the security boundaries.** The vault, policy engine, secrets redactor, and approval flow get design review before changes — security-minded eyes are very welcome. See [SECURITY.md](SECURITY.md) and [`docs/security/`](docs/security/).
 5. **Bug reports and tests** against the existing backend apps.
 

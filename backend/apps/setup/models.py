@@ -77,7 +77,7 @@ class SetupToken(models.Model):
     @classmethod
     def default_ttl(cls) -> timedelta:
         """TTL from settings, falling back to the module default."""
-        minutes = getattr(settings, "ORC_SETUP_TOKEN_TTL_MINUTES", None)
+        minutes = getattr(settings, "LCTL_SETUP_TOKEN_TTL_MINUTES", None)
         return timedelta(minutes=int(minutes)) if minutes else TOKEN_TTL
 
     @classmethod

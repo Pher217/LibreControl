@@ -6,7 +6,7 @@ Usage:
 Prints:
   - The short pairing code
   - A terminal QR code encoding the pairing payload
-  - The exact client command to run: orc-mcp pair <code> --backend <url>
+  - The exact client command to run: librecontrol-mcp pair <code> --backend <url>
 """
 
 from datetime import timedelta
@@ -29,14 +29,14 @@ class Command(BaseCommand):
         parser.add_argument(
             "--backend",
             default="",
-            help="Backend URL the client should connect to (overrides ORC_PUBLIC_BASE_URL)",
+            help="Backend URL the client should connect to (overrides LCTL_PUBLIC_BASE_URL)",
         )
 
     def handle(self, *args, **options):
         tool = options["tool"]
         label = options["label"]
         ttl = options["ttl"]
-        backend_url = options["backend"] or getattr(settings, "ORC_PUBLIC_BASE_URL", "")
+        backend_url = options["backend"] or getattr(settings, "LCTL_PUBLIC_BASE_URL", "")
 
         now = timezone.now()
         pairing = Pairing.objects.create(
@@ -59,9 +59,9 @@ class Command(BaseCommand):
         self.stdout.write("")
         self.stdout.write(self.style.SUCCESS("Run on the client:"))
         if backend_url:
-            self.stdout.write(f"  orc-mcp pair {pairing.code} --backend {backend_url}")
-            self.stdout.write(f"  orc-host pair {pairing.code} --backend {backend_url}  (for host daemons)")
+            self.stdout.write(f"  librecontrol-mcp pair {pairing.code} --backend {backend_url}")
+            self.stdout.write(f"  librectl pair {pairing.code} --backend {backend_url}  (for host daemons)")
         else:
-            self.stdout.write(f"  orc-mcp pair {pairing.code}")
-            self.stdout.write(f"  orc-host pair {pairing.code}  (for host daemons)")
+            self.stdout.write(f"  librecontrol-mcp pair {pairing.code}")
+            self.stdout.write(f"  librectl pair {pairing.code}  (for host daemons)")
         self.stdout.write("")

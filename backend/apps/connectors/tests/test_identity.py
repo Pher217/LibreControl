@@ -43,17 +43,17 @@ def _sign(private_key, *, method, path, body: bytes = b"", ts=None, nonce="testn
 
 
 def _sig_headers(connector_id, key_id, private_key, *, method, path, body=b"", nonce=None):
-    """Build the full dict of X-ORC-* headers for a request."""
+    """Build the full dict of X-LCTL-* headers for a request."""
     if nonce is None:
         import secrets
         nonce = secrets.token_hex(8)
     sig, ts = _sign(private_key, method=method, path=path, body=body, nonce=nonce)
     return {
-        "HTTP_X_ORC_CONNECTOR_ID": connector_id,
-        "HTTP_X_ORC_KEY_ID": key_id,
-        "HTTP_X_ORC_TIMESTAMP": ts,
-        "HTTP_X_ORC_NONCE": nonce,
-        "HTTP_X_ORC_SIGNATURE": sig,
+        "HTTP_X_LCTL_CONNECTOR_ID": connector_id,
+        "HTTP_X_LCTL_KEY_ID": key_id,
+        "HTTP_X_LCTL_TIMESTAMP": ts,
+        "HTTP_X_LCTL_NONCE": nonce,
+        "HTTP_X_LCTL_SIGNATURE": sig,
     }
 
 
@@ -74,8 +74,8 @@ def patch_telegram(monkeypatch):
 
 @pytest.fixture
 def with_legacy_token(settings):
-    settings.ORC_CONNECTOR_TOKEN = TOKEN
-    settings.ORC_PROMPT_CHAT_ID = ""
+    settings.LCTL_CONNECTOR_TOKEN = TOKEN
+    settings.LCTL_PROMPT_CHAT_ID = ""
 
 
 @pytest.fixture
@@ -105,7 +105,7 @@ class TestSignatureAuth:
         WHEN a request is signed with the matching private key
         THEN 200 is returned (not 401/403)
         """
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         key, private = connector_key
         path = f"{BASE}/notify"
         body = b'{"connector_id":"conn-test-001","tool":"cursor","message":"hi"}'
@@ -124,7 +124,7 @@ class TestSignatureAuth:
         WHEN a request carries a bad (random) signature
         THEN 401 is returned
         """
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         key, private = connector_key
         bad_sig = base64.b64encode(b"\xff" * 64).decode()
         ts = str(int(time.time()))
@@ -132,22 +132,22 @@ class TestSignatureAuth:
             f"{BASE}/notify",
             data=b'{"connector_id":"conn-test-001","tool":"cursor","message":"hi"}',
             content_type="application/json",
-            HTTP_X_ORC_CONNECTOR_ID=key.connector_id,
-            HTTP_X_ORC_KEY_ID=key.key_id,
-            HTTP_X_ORC_TIMESTAMP=ts,
-            HTTP_X_ORC_NONCE="unique-nonce-bad",
-            HTTP_X_ORC_SIGNATURE=bad_sig,
+            HTTP_X_LCTL_CONNECTOR_ID=key.connector_id,
+            HTTP_X_LCTL_KEY_ID=key.key_id,
+            HTTP_X_LCTL_TIMESTAMP=ts,
+            HTTP_X_LCTL_NONCE="unique-nonce-bad",
+            HTTP_X_LCTL_SIGNATURE=bad_sig,
         )
         assert resp.status_code == 401
 
     def test_missing_signature_headers_falls_to_legacy_check(self, client, settings):
         """
-        GIVEN no X-ORC-* headers at all (legacy client)
-        WHEN no ORC_CONNECTOR_TOKEN is configured either
+        GIVEN no X-LCTL-* headers at all (legacy client)
+        WHEN no LCTL_CONNECTOR_TOKEN is configured either
         THEN 503 (unconfigured) is returned — proving legacy path is exercised
         """
-        settings.ORC_CONNECTOR_TOKEN = ""
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_CONNECTOR_TOKEN = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         resp = client.post(
             f"{BASE}/notify",
             {"connector_id": "c1", "tool": "cursor", "message": "hi"},
@@ -161,7 +161,7 @@ class TestSignatureAuth:
         WHEN the request arrives
         THEN 401 is returned (timestamp skew)
         """
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         key, private = connector_key
         old_ts = str(int(time.time()) - 400)
         sig, _ = _sign(private, method="POST", path=f"{BASE}/notify", ts=old_ts, nonce="stale-nonce")
@@ -169,11 +169,11 @@ class TestSignatureAuth:
             f"{BASE}/notify",
             data=b'{"connector_id":"conn-test-001","tool":"cursor","message":"hi"}',
             content_type="application/json",
-            HTTP_X_ORC_CONNECTOR_ID=key.connector_id,
-            HTTP_X_ORC_KEY_ID=key.key_id,
-            HTTP_X_ORC_TIMESTAMP=old_ts,
-            HTTP_X_ORC_NONCE="stale-nonce",
-            HTTP_X_ORC_SIGNATURE=sig,
+            HTTP_X_LCTL_CONNECTOR_ID=key.connector_id,
+            HTTP_X_LCTL_KEY_ID=key.key_id,
+            HTTP_X_LCTL_TIMESTAMP=old_ts,
+            HTTP_X_LCTL_NONCE="stale-nonce",
+            HTTP_X_LCTL_SIGNATURE=sig,
         )
         assert resp.status_code == 401
 
@@ -185,7 +185,7 @@ class TestSignatureAuth:
         """
         import secrets as _secrets
 
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         key, private = connector_key
         path = f"{BASE}/notify"
         body = b'{"connector_id":"conn-test-001","tool":"cursor","message":"hi"}'
@@ -209,7 +209,7 @@ class TestSignatureAuth:
         """
         from django.utils import timezone
 
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         key, private = connector_key
         key.revoked_at = timezone.now()
         key.save(update_fields=["revoked_at"])
@@ -222,8 +222,8 @@ class TestSignatureAuth:
 
     def test_legacy_token_still_works(self, client, with_legacy_token):
         """
-        GIVEN a request using the legacy ORC_CONNECTOR_TOKEN Bearer header
-        WHEN no X-ORC-* headers are present
+        GIVEN a request using the legacy LCTL_CONNECTOR_TOKEN Bearer header
+        WHEN no X-LCTL-* headers are present
         THEN 200 is returned (backward compatibility)
         """
         resp = client.post(
@@ -341,7 +341,7 @@ class TestPairClaim:
         WHEN a signed request is made with the registered key
         THEN 200 is returned (end-to-end flow)
         """
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         private, pub_b64 = _gen_keypair()
         pairing = self._make_pairing()
 

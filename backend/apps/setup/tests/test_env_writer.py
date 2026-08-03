@@ -290,27 +290,27 @@ class TestUpdateEnvNewlineInjection:
         with pytest.raises(EnvWriteError):
             update_env(
                 path,
-                {"TELEGRAM_BOT_TOKEN": "x\x0bORC_CONNECTOR_TOKEN=pwned"},
+                {"TELEGRAM_BOT_TOKEN": "x\x0bLCTL_CONNECTOR_TOKEN=pwned"},
             )
 
     def test_second_order_injection_leaves_no_smuggled_key_after_later_legit_write(
         self, tmp_path
     ):
         """
-        GIVEN a rejected \\x0b-smuggled update attempt against ORC_CONNECTOR_TOKEN
+        GIVEN a rejected \\x0b-smuggled update attempt against LCTL_CONNECTOR_TOKEN
         WHEN a subsequent legitimate update_env call is made
-        THEN the file contains no line starting with "ORC_CONNECTOR_TOKEN"
+        THEN the file contains no line starting with "LCTL_CONNECTOR_TOKEN"
         """
         path = tmp_path / ".env"
         path.write_text("TELEGRAM_BOT_TOKEN=bar\n", encoding="utf-8")
         with pytest.raises(EnvWriteError):
             update_env(
                 path,
-                {"TELEGRAM_BOT_TOKEN": "x\x0bORC_CONNECTOR_TOKEN=pwned"},
+                {"TELEGRAM_BOT_TOKEN": "x\x0bLCTL_CONNECTOR_TOKEN=pwned"},
             )
         update_env(path, {"TELEGRAM_BOT_TOKEN": "legit-value"})
         lines = path.read_text(encoding="utf-8").splitlines()
-        assert not any(line.startswith("ORC_CONNECTOR_TOKEN") for line in lines)
+        assert not any(line.startswith("LCTL_CONNECTOR_TOKEN") for line in lines)
 
 
 # ---------------------------------------------------------------------------
@@ -477,11 +477,11 @@ class TestUpdateEnvMissingDirectory:
         """
         GIVEN a target path whose parent directory does not exist
         WHEN update_env is called and EnvWriteError is raised
-        THEN the message mentions ORC_SETUP_ENV_FILE so the operator knows
+        THEN the message mentions LCTL_SETUP_ENV_FILE so the operator knows
              which setting to fix
         """
         path = tmp_path / "does-not-exist" / ".env"
-        with pytest.raises(EnvWriteError, match="ORC_SETUP_ENV_FILE"):
+        with pytest.raises(EnvWriteError, match="LCTL_SETUP_ENV_FILE"):
             update_env(path, {"TELEGRAM_BOT_TOKEN": "bar"})
 
 

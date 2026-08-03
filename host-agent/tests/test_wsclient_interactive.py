@@ -1,4 +1,4 @@
-"""Tests for the ORC_HEADLESS_ENGINE=interactive routing in wsclient.
+"""Tests for the LCTL_HEADLESS_ENGINE=interactive routing in wsclient.
 
 The interactive engine keeps ONE persistent fake-claude process per session;
 headless.prompt turns must route to it (no per-turn respawn), stream events
@@ -21,8 +21,8 @@ FAKE = os.path.join(os.path.dirname(__file__), "fake_claude.py")
 
 @pytest.fixture(autouse=True)
 def _clean_registries(monkeypatch):
-    monkeypatch.setenv("ORC_CLAUDE_BIN", FAKE)
-    monkeypatch.setenv("ORC_HEADLESS_ENGINE", "interactive")
+    monkeypatch.setenv("LCTL_CLAUDE_BIN", FAKE)
+    monkeypatch.setenv("LCTL_HEADLESS_ENGINE", "interactive")
     monkeypatch.setenv("FAKE_CLAUDE_MODE", "echo")
     wsclient_module._engines.clear()
     wsclient_module._headless_locks.clear()
@@ -65,7 +65,7 @@ async def _drain_replies(outbound, want, timeout=15.0):
 @pytest.mark.asyncio
 async def test_interactive_mode_routes_to_persistent_engine():
     """
-    GIVEN ORC_HEADLESS_ENGINE=interactive and two headless.prompt frames
+    GIVEN LCTL_HEADLESS_ENGINE=interactive and two headless.prompt frames
     WHEN both are handled
     THEN both replies arrive via session.headless_reply frames AND the second
          reply carries the fake's turn counter 2 — proving ONE process served

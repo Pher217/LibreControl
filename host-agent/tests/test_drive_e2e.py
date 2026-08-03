@@ -9,7 +9,7 @@ Pins the following contract (2026-06-22 north-star spec):
   3. Inject+submit: text is typed then Enter fires (submit-settle timing reached).
   4. Restart survival: after daemon reconnect, inject still works — PtySession is
      stateless (queries tmux by name) so sessions outlive daemon restarts.
-  5. (xfail) The ``orc run`` path opens a SEPARATE ws connection whose
+  5. (xfail) The ``librectl run`` path opens a SEPARATE ws connection whose
      ``stream_pty_output`` loop has no ``recv`` handler.  ``pty.inject`` frames
      delivered to that connection are silently dropped.  This documents the
      contention bug that the fix (daemon-owned sessions exclusively) closes.
@@ -319,7 +319,7 @@ async def test_session_start_and_inject_on_same_daemon_connection():
 # ---------------------------------------------------------------------------
 
 
-def test_orc_run_ws_connection_handles_pty_inject():
+def test_librectl_run_ws_connection_handles_pty_inject():
     """
     GIVEN run_cmd.run_pty opens a separate ws to the backend for a session
     WHEN a pty.inject frame is delivered to that ws connection
@@ -328,7 +328,7 @@ def test_orc_run_ws_connection_handles_pty_inject():
     Fixed: run_pty now runs stream_pty_output concurrently with a _recv loop that
     dispatches inbound host_command frames (including pty.inject).  Previously,
     stream_pty_output ran alone with no recv path — inject frames were silently
-    dropped on orc run connections (the 'ws contention bug').
+    dropped on librectl run connections (the 'ws contention bug').
     """
     from agent_host.run_cmd import run_pty  # noqa: PLC0415
 

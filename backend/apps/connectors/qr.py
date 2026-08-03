@@ -1,7 +1,7 @@
 """QR-code utilities for connector pairing (UC0).
 
 Uses `segno` to generate both terminal (ASCII) and PNG output.
-The pairing payload is a URI-style string the orc-mcp client understands:
+The pairing payload is a URI-style string the librecontrol-mcp client understands:
 
     orc-pair://<host>/<code>
 

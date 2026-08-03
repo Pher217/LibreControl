@@ -1,6 +1,6 @@
 # Threat Model
 
-Scope: a single-operator, self-hosted OpenRemote-Control deployment (backend +
+Scope: a single-operator, self-hosted LibreControl deployment (backend +
 host daemon on machines the operator owns). This is the deployment shape
 described in [SECURITY.md](../../SECURITY.md#trust-model--read-this-before-self-hosting)
 — not multi-tenant.
@@ -44,11 +44,11 @@ Telegram API  ──(bot token, HTTPS)──▶  Backend (Django/Channels)
    is additionally recorded in the cache (`cache.add`) so a captured URL cannot
    be replayed after first use (`backend/apps/hostlink/consumers.py::connect`).
 3. **Host daemon → local execution.** The daemon runs `claude` locally. The
-   default engine (`ORC_HEADLESS_ENGINE=interactive` or unset) passes
+   default engine (`LCTL_HEADLESS_ENGINE=interactive` or unset) passes
    `--permission-mode bypassPermissions` — **no per-tool approval gate**. This
    is "trusted-host mode": once a message clears the Telegram allowlist gate,
    it can trigger arbitrary tool use on the host. Setting
-   `ORC_HEADLESS_ENGINE=sdk` instead routes each tool call through an explicit
+   `LCTL_HEADLESS_ENGINE=sdk` instead routes each tool call through an explicit
    Allow/Deny prompt in chat (`backend/apps/hostlink` approval flow +
    `host-agent/agent_host/sdk_session.py`), trading latency for a real
    per-action gate.
@@ -94,7 +94,7 @@ Telegram API  ──(bot token, HTTPS)──▶  Backend (Django/Channels)
 - Rotate the bot token and any host enrollment tokens immediately on any
   suspicion of compromise (lost device, leaked `.env`, unexpected chat
   activity).
-- Prefer `ORC_HEADLESS_ENGINE=sdk` over the default when driving a host whose
+- Prefer `LCTL_HEADLESS_ENGINE=sdk` over the default when driving a host whose
   blast radius from an errant or malicious command would be high.
 
 ## Input classifier scope
@@ -106,7 +106,7 @@ non-test caller.
 
 | Engine / session path | Classifier runs? | Notes |
 |---|---|---|
-| `interactive_engine` (default) | No | `ORC_HEADLESS_ENGINE=interactive` is the shipped default, so on a default install the classifier never executes at all. |
+| `interactive_engine` (default) | No | `LCTL_HEADLESS_ENGINE=interactive` is the shipped default, so on a default install the classifier never executes at all. |
 | `claude_headless` | No | Launches the CLI with `--permission-mode bypassPermissions`. |
 | `sdk_session` | No | Uses the explicit Allow/Deny approval flow instead of regex classification. |
 | `pty_session.send_keys` | Yes | Denylist speed-bump only. |

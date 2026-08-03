@@ -320,7 +320,7 @@ def test_pty_inject_skipped_when_not_owned(monkeypatch):
     """
     GIVEN a pty.inject frame and an owns_session predicate that returns False
           (this process did not start the session — e.g. the observe daemon
-          receiving a broadcast inject for an `orc run` session)
+          receiving a broadcast inject for a `librectl run` session)
     WHEN  handle_host_command is called
     THEN  send_keys is NOT called — the owning process injects instead.
     """

@@ -14,9 +14,9 @@ from agent_host.config import HostConfig, config_path, load, save
 
 @pytest.fixture()
 def tmp_config(tmp_path, monkeypatch):
-    """Redirect config_path() to a temp file via ORC_CONFIG_PATH."""
+    """Redirect config_path() to a temp file via LCTL_CONFIG_PATH."""
     cfg_file = tmp_path / "host.json"
-    monkeypatch.setenv("ORC_CONFIG_PATH", str(cfg_file))
+    monkeypatch.setenv("LCTL_CONFIG_PATH", str(cfg_file))
     return cfg_file
 
 
@@ -28,15 +28,15 @@ class TestConfigPath:
         THEN it returns a path under XDG_CONFIG_HOME.
         """
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
-        monkeypatch.delenv("ORC_CONFIG_PATH", raising=False)
+        monkeypatch.delenv("LCTL_CONFIG_PATH", raising=False)
         p = config_path()
         assert str(tmp_path) in str(p)
-        assert "openremote-control" in str(p)
+        assert "librecontrol" in str(p)
         assert p.name == "host.json"
 
-    def test_orc_config_path_takes_priority(self, tmp_path, monkeypatch):
+    def test_lctl_config_path_takes_priority(self, tmp_path, monkeypatch):
         override = tmp_path / "override.json"
-        monkeypatch.setenv("ORC_CONFIG_PATH", str(override))
+        monkeypatch.setenv("LCTL_CONFIG_PATH", str(override))
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "xdg"))
         assert config_path() == override
 
@@ -90,7 +90,7 @@ class TestSaveLoad:
     def test_parent_dirs_created(self, tmp_path, monkeypatch):
         """save() creates parent directories if they do not exist."""
         deep = tmp_path / "a" / "b" / "c" / "host.json"
-        monkeypatch.setenv("ORC_CONFIG_PATH", str(deep))
+        monkeypatch.setenv("LCTL_CONFIG_PATH", str(deep))
         cfg = HostConfig(backend_url="http://localhost", host_id="x", token="t")
         save(cfg)
         assert deep.exists()

@@ -1,17 +1,17 @@
-"""MCP server exposing the OpenRemote-Control supervision tools.
+"""MCP server exposing the LibreControl supervision tools.
 
 Tools (the agent calls these; they route to the user's chat via the backend):
-  - openremote_control(name)        -> start a session, dispatch it to the user's chat app
+  - librecontrol(name)              -> start a session, dispatch it to the user's chat app
   - notify(message)                 -> push progress to chat
   - ask_human(question, options)    -> ask the user; returns their answer
   - request_approval(action, preview) -> returns 'allow' | 'deny' (fail-closed)
 
-The `mcp` SDK is imported lazily inside _serve() so `orc_mcp.client` stays importable
+The `mcp` SDK is imported lazily inside _serve() so `librecontrol_mcp.client` stays importable
 (and testable) without the SDK installed.
 
-CLI entry point: `orc-mcp [pair <code> [--backend URL] | serve]`
-  orc-mcp serve  (default) — start the MCP server
-  orc-mcp pair <code>       — claim a one-time pairing code, register Ed25519 key
+CLI entry point: `librecontrol-mcp [pair <code> [--backend URL] | serve]`
+  librecontrol-mcp serve  (default) — start the MCP server
+  librecontrol-mcp pair <code>       — claim a one-time pairing code, register Ed25519 key
 """
 
 from __future__ import annotations
@@ -24,14 +24,14 @@ def _serve() -> None:
 
     from mcp.server.fastmcp import FastMCP
 
-    from orc_mcp.client import OrcBackendClient
+    from librecontrol_mcp.client import OrcBackendClient
 
     client = OrcBackendClient()
     mcp = FastMCP("orc")
 
     @mcp.tool()
-    def openremote_control(name: str = "") -> str:
-        """Start an OpenRemote-Control session for this coding session and dispatch it to
+    def librecontrol(name: str = "") -> str:
+        """Start a LibreControl session for this coding session and dispatch it to
         the operator's messaging app of choice (Telegram, WhatsApp, Slack, Signal, or
         iMessage), so they can supervise from their phone. Optionally pass a session name."""
         # Bind to THIS coding session so a Telegram reply resumes this exact
@@ -58,7 +58,7 @@ def _serve() -> None:
             # Bind to the operator's CURRENT Codex session (snapshot handoff):
             # discover its id from the rollout matching this cwd and resume it,
             # so the phone chat continues with full context. None → fresh.
-            from orc_mcp.codex_discovery import find_codex_session  # noqa: PLC0415
+            from librecontrol_mcp.codex_discovery import find_codex_session  # noqa: PLC0415
 
             codex_sid = find_codex_session(workspace_root)
             if codex_sid:
@@ -104,7 +104,7 @@ def _serve() -> None:
 def _pair(args: list[str]) -> None:
     import os
 
-    from orc_mcp.pair import pair
+    from librecontrol_mcp.pair import pair
 
     # Parse: pair <code> [--backend URL]
     code: str | None = None
@@ -122,10 +122,10 @@ def _pair(args: list[str]) -> None:
             sys.exit(1)
 
     if not code:
-        print("Usage: orc-mcp pair <code> [--backend URL]", file=sys.stderr)
+        print("Usage: librecontrol-mcp pair <code> [--backend URL]", file=sys.stderr)
         sys.exit(1)
 
-    backend_url = backend_url or os.environ.get("ORC_BACKEND_URL") or "http://localhost:8000"
+    backend_url = backend_url or os.environ.get("LCTL_BACKEND_URL") or "http://localhost:8000"
 
     try:
         result = pair(code, backend_url)
@@ -137,8 +137,8 @@ def _pair(args: list[str]) -> None:
     print(f"  connector_id : {result['connector_id']}")
     print(f"  key_id       : {result['key_id']}")
     print(f"  backend      : {backend_url}")
-    print("Ed25519 key saved to ~/.config/openremote-control/connector_key")
-    print("No shared secret needed — set ORC_BACKEND_URL, omit ORC_CONNECTOR_TOKEN.")
+    print("Ed25519 key saved to ~/.config/librecontrol/connector_key")
+    print("No shared secret needed — set LCTL_BACKEND_URL, omit LCTL_CONNECTOR_TOKEN.")
 
 
 def main() -> None:
@@ -149,7 +149,7 @@ def main() -> None:
         _serve()
     else:
         print(f"Unknown subcommand: {argv[0]}", file=sys.stderr)
-        print("Usage: orc-mcp [serve | pair <code> [--backend URL]]", file=sys.stderr)
+        print("Usage: librecontrol-mcp [serve | pair <code> [--backend URL]]", file=sys.stderr)
         sys.exit(1)
 
 

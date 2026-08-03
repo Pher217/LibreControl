@@ -1,4 +1,4 @@
-"""Pure HTTP client for the OpenRemote-Control connector API.
+"""Pure HTTP client for the LibreControl connector API.
 
 No `mcp` import here so it is unit-testable without the MCP SDK. The long wait for
 a human answer is done by POLLING the backend (POST to create a Prompt, then GET
@@ -6,8 +6,8 @@ the result), not by holding one long HTTP read — so a dropped connection or a
 restarted backend doesn't strand the agent.
 
 Auth strategy (checked once at construction):
-  1. If ~/.config/openremote-control/connector_key exists → Ed25519 request signing.
-  2. Else if ORC_CONNECTOR_TOKEN is set → legacy Bearer header.
+  1. If ~/.config/librecontrol/connector_key exists → Ed25519 request signing.
+  2. Else if LCTL_CONNECTOR_TOKEN is set → legacy Bearer header.
   3. Else → no auth header (backend will 401; surfaced to caller).
 """
 
@@ -30,7 +30,7 @@ _POLL_HTTP_TIMEOUT = 15.0
 
 
 def _default_connector_id() -> str:
-    return os.environ.get("ORC_CONNECTOR_ID") or f"orc-{socket.gethostname()}"
+    return os.environ.get("LCTL_CONNECTOR_ID") or f"orc-{socket.gethostname()}"
 
 
 class OrcBackendClient:
@@ -48,17 +48,17 @@ class OrcBackendClient:
         _signing_identity: tuple["Ed25519PrivateKey", dict] | None | bool = False,
     ):
         self.base_url = (
-            base_url or os.environ.get("ORC_BACKEND_URL") or "http://localhost:8000"
+            base_url or os.environ.get("LCTL_BACKEND_URL") or "http://localhost:8000"
         ).rstrip("/")
-        self.token = token if token is not None else os.environ.get("ORC_CONNECTOR_TOKEN", "")
-        self.tool = tool or os.environ.get("ORC_TOOL", "unknown")
+        self.token = token if token is not None else os.environ.get("LCTL_CONNECTOR_TOKEN", "")
+        self.tool = tool or os.environ.get("LCTL_TOOL", "unknown")
         self.poll_interval = poll_interval
         self.overall_timeout = overall_timeout
         self._transport = transport
 
         # Resolve signing identity: False = not yet loaded; None = no identity.
         if _signing_identity is False:
-            from orc_mcp.signing import load_or_create_identity
+            from librecontrol_mcp.signing import load_or_create_identity
             loaded = load_or_create_identity()
         else:
             loaded = _signing_identity  # type: ignore[assignment]
@@ -90,7 +90,7 @@ class OrcBackendClient:
         Signing takes priority over bearer token.
         """
         if self._sign_priv is not None:
-            from orc_mcp.signing import sign_headers
+            from librecontrol_mcp.signing import sign_headers
             return sign_headers(
                 self._sign_priv,
                 self._sign_connector_id,

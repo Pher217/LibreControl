@@ -1,8 +1,8 @@
 ---
-description: Start an OpenRemote-Control session and dispatch it to your chat app
+description: Start a LibreControl session and dispatch it to your chat app
 ---
 
-Call the `openremote_control` tool from the `orc` MCP server to start a remote-control
+Call the `librecontrol` tool from the `orc` MCP server to start a remote-control
 session for this coding session and dispatch it to my messaging app of choice
 (Telegram, or WhatsApp/Slack/Signal via Matrix), so I can supervise AND drive it from
 my phone.

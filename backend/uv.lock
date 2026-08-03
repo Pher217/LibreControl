@@ -701,6 +701,72 @@ wheels = [
 ]
 
 [[package]]
+name = "librecontrol-backend"
+version = "0.2.0"
+source = { editable = "." }
+dependencies = [
+    { name = "celery" },
+    { name = "channels", extra = ["daphne"] },
+    { name = "channels-redis" },
+    { name = "cryptography" },
+    { name = "django" },
+    { name = "django-cors-headers" },
+    { name = "django-redis" },
+    { name = "djangorestframework" },
+    { name = "gunicorn" },
+    { name = "httpx" },
+    { name = "psycopg", extra = ["binary"] },
+    { name = "python-dotenv" },
+    { name = "redis" },
+    { name = "segno" },
+    { name = "structlog" },
+    { name = "uvicorn", extra = ["standard"] },
+    { name = "whitenoise" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "bandit" },
+    { name = "coverage" },
+    { name = "factory-boy" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-django" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bandit", extras = ["toml"], marker = "extra == 'dev'", specifier = ">=1.9,<2" },
+    { name = "celery", specifier = ">=5.4" },
+    { name = "channels", extras = ["daphne"], specifier = ">=4.2" },
+    { name = "channels-redis", specifier = ">=4.2" },
+    { name = "coverage", marker = "extra == 'dev'", specifier = ">=7.6" },
+    { name = "cryptography", specifier = ">=43.0" },
+    { name = "django", specifier = ">=5.2,<6.0" },
+    { name = "django-cors-headers", specifier = ">=4.4" },
+    { name = "django-redis", specifier = ">=5.4" },
+    { name = "djangorestframework", specifier = ">=3.15" },
+    { name = "factory-boy", marker = "extra == 'dev'", specifier = ">=3.3" },
+    { name = "gunicorn", specifier = ">=23.0" },
+    { name = "httpx", specifier = ">=0.27" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<9" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24,<1" },
+    { name = "pytest-django", marker = "extra == 'dev'", specifier = ">=4.9" },
+    { name = "python-dotenv", specifier = ">=1.0" },
+    { name = "redis", specifier = ">=5.0,<9" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15,<0.16" },
+    { name = "segno", specifier = ">=1.6" },
+    { name = "structlog", specifier = ">=24.4" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
+    { name = "whitenoise", specifier = ">=6.7" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "librt"
 version = "0.11.0"
 source = { registry = "https://pypi.org/simple" }
@@ -848,72 +914,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/a2/6e/371856a3fb9d31ca8
 wheels = [
     { url = "https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl", hash = "sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505", size = 4963, upload-time = "2025-04-22T14:54:22.983Z" },
 ]
-
-[[package]]
-name = "openremote-control-backend"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "celery" },
-    { name = "channels", extra = ["daphne"] },
-    { name = "channels-redis" },
-    { name = "cryptography" },
-    { name = "django" },
-    { name = "django-cors-headers" },
-    { name = "django-redis" },
-    { name = "djangorestframework" },
-    { name = "gunicorn" },
-    { name = "httpx" },
-    { name = "psycopg", extra = ["binary"] },
-    { name = "python-dotenv" },
-    { name = "redis" },
-    { name = "segno" },
-    { name = "structlog" },
-    { name = "uvicorn", extra = ["standard"] },
-    { name = "whitenoise" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "bandit" },
-    { name = "coverage" },
-    { name = "factory-boy" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-django" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "bandit", extras = ["toml"], marker = "extra == 'dev'", specifier = ">=1.9,<2" },
-    { name = "celery", specifier = ">=5.4" },
-    { name = "channels", extras = ["daphne"], specifier = ">=4.2" },
-    { name = "channels-redis", specifier = ">=4.2" },
-    { name = "coverage", marker = "extra == 'dev'", specifier = ">=7.6" },
-    { name = "cryptography", specifier = ">=43.0" },
-    { name = "django", specifier = ">=5.2,<6.0" },
-    { name = "django-cors-headers", specifier = ">=4.4" },
-    { name = "django-redis", specifier = ">=5.4" },
-    { name = "djangorestframework", specifier = ">=3.15" },
-    { name = "factory-boy", marker = "extra == 'dev'", specifier = ">=3.3" },
-    { name = "gunicorn", specifier = ">=23.0" },
-    { name = "httpx", specifier = ">=0.27" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11" },
-    { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3,<9" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24,<1" },
-    { name = "pytest-django", marker = "extra == 'dev'", specifier = ">=4.9" },
-    { name = "python-dotenv", specifier = ">=1.0" },
-    { name = "redis", specifier = ">=5.0,<9" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15,<0.16" },
-    { name = "segno", specifier = ">=1.6" },
-    { name = "structlog", specifier = ">=24.4" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.30" },
-    { name = "whitenoise", specifier = ">=6.7" },
-]
-provides-extras = ["dev"]
 
 [[package]]
 name = "packaging"

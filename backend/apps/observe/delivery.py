@@ -98,7 +98,7 @@ def _find_conflicting_topic_owner(thread, forum_chat_id):
     """Return another active Thread that already owns a live topic for the same
     claude_session_id AND forum_chat_id as `thread`, if any. Used to avoid minting
     a duplicate Telegram topic when this thread's own topic_id metadata went
-    missing but a sibling Thread (e.g. from a prior /openremote-control dispatch)
+    missing but a sibling Thread (e.g. from a prior /librecontrol dispatch)
     still has one.
 
     Scoped to active, non-terminal threads and the SAME forum: a stopped/failed

@@ -35,8 +35,8 @@ def patch_telegram(monkeypatch):
 
 @pytest.fixture
 def with_token(settings):
-    settings.ORC_CONNECTOR_TOKEN = TOKEN
-    settings.ORC_PROMPT_CHAT_ID = ""
+    settings.LCTL_CONNECTOR_TOKEN = TOKEN
+    settings.LCTL_PROMPT_CHAT_ID = ""
     return TOKEN
 
 
@@ -49,12 +49,12 @@ def with_token(settings):
 class TestConnectorAuth:
     def test_missing_token_returns_401(self, client, settings):
         """
-        GIVEN ORC_CONNECTOR_TOKEN is set but no Authorization header is sent
+        GIVEN LCTL_CONNECTOR_TOKEN is set but no Authorization header is sent
         WHEN POST /api/connectors/notify is called
         THEN 401 is returned
         """
-        settings.ORC_CONNECTOR_TOKEN = TOKEN
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_CONNECTOR_TOKEN = TOKEN
+        settings.LCTL_PROMPT_CHAT_ID = ""
         response = client.post(
             f"{BASE}/notify",
             {"connector_id": "c1", "tool": "claude", "message": "hi"},
@@ -64,12 +64,12 @@ class TestConnectorAuth:
 
     def test_wrong_token_returns_401(self, client, settings):
         """
-        GIVEN ORC_CONNECTOR_TOKEN is set and a wrong token is provided
+        GIVEN LCTL_CONNECTOR_TOKEN is set and a wrong token is provided
         WHEN POST /api/connectors/notify is called
         THEN 401 is returned
         """
-        settings.ORC_CONNECTOR_TOKEN = TOKEN
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_CONNECTOR_TOKEN = TOKEN
+        settings.LCTL_PROMPT_CHAT_ID = ""
         response = client.post(
             f"{BASE}/notify",
             {"connector_id": "c1", "tool": "claude", "message": "hi"},
@@ -80,12 +80,12 @@ class TestConnectorAuth:
 
     def test_unconfigured_token_returns_503(self, client, settings):
         """
-        GIVEN ORC_CONNECTOR_TOKEN is empty (not configured)
+        GIVEN LCTL_CONNECTOR_TOKEN is empty (not configured)
         WHEN any endpoint is called
         THEN 503 is returned
         """
-        settings.ORC_CONNECTOR_TOKEN = ""
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_CONNECTOR_TOKEN = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
         response = client.post(
             f"{BASE}/notify",
             {"connector_id": "c1", "tool": "claude", "message": "hi"},
@@ -96,7 +96,7 @@ class TestConnectorAuth:
 
 
 # ---------------------------------------------------------------------------
-# start (the /openremote-control dispatch endpoint)
+# start (the /librecontrol dispatch endpoint)
 # ---------------------------------------------------------------------------
 
 

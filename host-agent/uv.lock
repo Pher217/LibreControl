@@ -458,7 +458,7 @@ wheels = [
 ]
 
 [[package]]
-name = "openremote-control-host-agent"
+name = "librecontrol-host-agent"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [

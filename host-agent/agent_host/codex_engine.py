@@ -20,10 +20,10 @@ MAX_LINE_BYTES = 1_000_000
 
 
 def _resolve_codex_bin() -> str:
-    # Order: $ORC_CODEX_BIN -> $CODEX_CLI_PATH -> the app bundle path -> 'codex'.
+    # Order: $LCTL_CODEX_BIN -> $CODEX_CLI_PATH -> the app bundle path -> 'codex'.
     # The app binary is REQUIRED (the PATH 'codex' is an older version that
     # rejects this user's config); default to the app bundle path.
-    explicit = os.environ.get("ORC_CODEX_BIN") or os.environ.get("CODEX_CLI_PATH")
+    explicit = os.environ.get("LCTL_CODEX_BIN") or os.environ.get("CODEX_CLI_PATH")
     if explicit:
         return explicit
     app_bin = "/Applications/Codex.app/Contents/Resources/codex"
@@ -48,7 +48,7 @@ class CodexEngine:
         self._proc: subprocess.Popen | None = None
         self._reader: threading.Thread | None = None
         self._finished_this_turn = False
-        self._sandbox = os.environ.get("ORC_CODEX_SANDBOX", "workspace-write")
+        self._sandbox = os.environ.get("LCTL_CODEX_SANDBOX", "workspace-write")
 
     def send(self, text: str) -> None:
         with self._lock:

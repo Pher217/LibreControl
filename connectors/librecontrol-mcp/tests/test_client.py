@@ -4,7 +4,7 @@ import json
 
 import httpx
 
-from orc_mcp.client import OrcBackendClient
+from librecontrol_mcp.client import OrcBackendClient
 
 
 def _make(handler, **kw):

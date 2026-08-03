@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a defect in OpenRemote Control
+description: Report a defect in LibreControl
 labels: ["bug"]
 body:
   - type: markdown
@@ -38,7 +38,7 @@ body:
       options:
         - backend
         - host-agent
-        - orc-mcp connector
+        - librecontrol-mcp connector
         - messaging-gateway connector
         - docs / deploy
         - not sure

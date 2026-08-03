@@ -20,7 +20,7 @@ from apps.hosts.models import Host
 
 
 def _enroll_secret() -> str:
-    return getattr(settings, "ORC_ENROLL_SECRET", "")
+    return getattr(settings, "LCTL_ENROLL_SECRET", "")
 
 
 class EnrollView(APIView):

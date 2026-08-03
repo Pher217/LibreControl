@@ -7,7 +7,7 @@ import socket
 
 import httpx
 
-from orc_mcp.signing import generate_keypair, public_key_b64, save_identity
+from librecontrol_mcp.signing import generate_keypair, public_key_b64, save_identity
 
 
 def pair(code: str, backend_url: str, *, _transport: httpx.BaseTransport | None = None) -> dict:
@@ -22,7 +22,7 @@ def pair(code: str, backend_url: str, *, _transport: httpx.BaseTransport | None 
     """
     priv = generate_keypair()
     pub_b64 = public_key_b64(priv)
-    tool = os.environ.get("ORC_TOOL", "unknown")
+    tool = os.environ.get("LCTL_TOOL", "unknown")
     label = socket.gethostname()
 
     url = backend_url.rstrip("/") + "/api/connectors/pair/claim"

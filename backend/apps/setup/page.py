@@ -55,7 +55,7 @@ class SetupPageView(View):
                 samesite="Strict",
                 secure=request.is_secure(),
                 path="/",
-                max_age=int(settings.ORC_SETUP_TOKEN_TTL_MINUTES) * 60,
+                max_age=int(settings.LCTL_SETUP_TOKEN_TTL_MINUTES) * 60,
             )
             return response
 
