@@ -1,6 +1,6 @@
 [project]
 name = "librecontrol-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "LibreControl universal MCP bridge — supervise any MCP-capable agent from your chat."
 requires-python = ">=3.11"
 dependencies = [
