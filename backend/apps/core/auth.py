@@ -1,4 +1,4 @@
-"""Shared bearer-token permission base for ORC apps.
+"""Shared bearer-token permission base for LibreControl apps.
 
 Plain-Python utility — no models, not in INSTALLED_APPS.
 """

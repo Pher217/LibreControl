@@ -9,7 +9,7 @@ or any PTY support.
 SCOPE — read this before relying on it
 --------------------------------------
 This classifier guards exactly ONE path: raw keystroke injection into a tmux
-pane via ``pty_session.send_keys`` (the ``orc run`` / PTY drive path).  It is
+pane via ``pty_session.send_keys`` (the ``librectl run`` / PTY drive path).  It is
 the only non-test caller.
 
 It does **NOT** guard the headless engines (``interactive_engine``,
@@ -17,7 +17,7 @@ It does **NOT** guard the headless engines (``interactive_engine``,
 is a natural-language prompt for the agent, not a shell command, so it is
 never classified here.  ``interactive_engine`` and ``claude_headless`` launch
 the CLI with ``--permission-mode bypassPermissions``, meaning the agent
-executes tools without a per-tool gate.  ``ORC_HEADLESS_ENGINE=interactive``
+executes tools without a per-tool gate.  ``LCTL_HEADLESS_ENGINE=interactive``
 is the shipped default, so on a default install **no part of this module is
 in the loop**.  See SECURITY.md ("Trust model") for what actually protects
 that path: the Telegram identity allowlist, and nothing else.

@@ -112,11 +112,11 @@ class TestTokenGate:
     def test_valid_token_in_header_returns_200(self, client):
         """
         GIVEN a freshly issued live token
-        WHEN GET /api/setup/state is requested with X-ORC-Setup-Token header
+        WHEN GET /api/setup/state is requested with X-LCTL-Setup-Token header
         THEN 200 is returned
         """
         raw = _live_token()
-        resp = client.get(STATE_URL, HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw)
+        resp = client.get(STATE_URL, HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw)
         assert resp.status_code == 200
 
 
@@ -132,7 +132,7 @@ class TestHostAllowlist:
         """
         GIVEN a valid, live setup token
         WHEN the request arrives with Host: evil.example.com (not in
-             ORC_SETUP_ALLOWED_HOSTS, though Django's own ALLOWED_HOSTS
+             LCTL_SETUP_ALLOWED_HOSTS, though Django's own ALLOWED_HOSTS
              permits it so the request reaches our permission check)
         THEN 403 is returned regardless of the valid token
         """
@@ -182,10 +182,10 @@ class TestNormaliseHost:
 
 @pytest.mark.django_db
 class TestNormaliseHostIntegration:
-    @override_settings(ORC_SETUP_ALLOWED_HOSTS=["::1"], ALLOWED_HOSTS=["*"])
+    @override_settings(LCTL_SETUP_ALLOWED_HOSTS=["::1"], ALLOWED_HOSTS=["*"])
     def test_bracketed_ipv6_host_header_matches_bare_allowlist_entry(self, client):
         """
-        GIVEN ORC_SETUP_ALLOWED_HOSTS contains the bare address "::1"
+        GIVEN LCTL_SETUP_ALLOWED_HOSTS contains the bare address "::1"
         WHEN GET /api/setup/state arrives with Host: [::1]:8000 and a valid
              token
         THEN 200 is returned (both sides are normalised before comparison)
@@ -230,7 +230,7 @@ class TestSetupClosed:
             {"stage": SetupState.STAGE_RUNTIMES},
             format="json",
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
         )
         assert resp.status_code == 410
 
@@ -243,7 +243,7 @@ class TestSetupClosed:
         self._complete_setup()
         raw = _live_token()
         resp = client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         assert resp.status_code == 410
 
@@ -279,7 +279,7 @@ class TestQueryParamCsrfDefense:
         """
         GIVEN a live token
         WHEN POST /api/setup/advance is requested with the token in the
-             X-ORC-Setup-Token header
+             X-LCTL-Setup-Token header
         THEN 200 is returned
         """
         _connect_provider()
@@ -289,7 +289,7 @@ class TestQueryParamCsrfDefense:
             {"stage": SetupState.STAGE_RUNTIMES},
             format="json",
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
         )
         assert resp.status_code == 200
 
@@ -321,7 +321,7 @@ class TestCrossSiteRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_SEC_FETCH_SITE="cross-site",
         )
         assert resp.status_code == 403
@@ -336,7 +336,7 @@ class TestCrossSiteRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_ORIGIN="http://evil.example.com",
         )
         assert resp.status_code == 403
@@ -352,7 +352,7 @@ class TestCrossSiteRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost:8000",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_ORIGIN="http://localhost:8000",
         )
         assert resp.status_code == 200
@@ -368,7 +368,7 @@ class TestCrossSiteRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost:8000",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_ORIGIN="http://localhost:3000",
         )
         assert resp.status_code == 403
@@ -384,7 +384,7 @@ class TestCrossSiteRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost:8000",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_ORIGIN="null",
         )
         assert resp.status_code == 403
@@ -407,7 +407,7 @@ class TestProxyHeaderRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_X_FORWARDED_HOST="localhost",
         )
         assert resp.status_code == 403
@@ -422,7 +422,7 @@ class TestProxyHeaderRefusal:
         resp = client.get(
             STATE_URL,
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
             HTTP_X_FORWARDED_FOR="1.2.3.4",
         )
         assert resp.status_code == 403
@@ -448,7 +448,7 @@ class TestAdvanceRejectsDone:
             {"stage": SetupState.STAGE_DONE},
             format="json",
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
         )
         assert resp.status_code == 400
 
@@ -465,7 +465,7 @@ class TestAdvanceRejectsDone:
             {"stage": SetupState.STAGE_DONE},
             format="json",
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
         )
         assert SetupState.load().is_complete is False
 
@@ -486,7 +486,7 @@ class TestAdvanceDoesNotConsumeToken:
             {"stage": SetupState.STAGE_RUNTIMES},
             format="json",
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
         )
         assert resp.status_code == 200
 
@@ -504,7 +504,7 @@ class TestAdvanceDoesNotConsumeToken:
             {"stage": SetupState.STAGE_RUNTIMES},
             format="json",
             HTTP_HOST="localhost",
-            HTTP_X_ORC_SETUP_TOKEN=raw,
+            HTTP_X_LCTL_SETUP_TOKEN=raw,
         )
         obj.refresh_from_db()
         assert obj.consumed_at is None
@@ -521,7 +521,7 @@ class TestCompleteBurnsToken:
         _ready_for_completion()
         raw = _live_token()
         resp = client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         assert resp.status_code == 200
 
@@ -534,7 +534,7 @@ class TestCompleteBurnsToken:
         _ready_for_completion()
         raw = _live_token()
         client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         assert SetupState.load().is_complete is True
 
@@ -547,11 +547,11 @@ class TestCompleteBurnsToken:
         _ready_for_completion()
         raw = _live_token()
         first = client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         assert first.status_code == 200
         second = client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         assert second.status_code == 410
 
@@ -564,7 +564,7 @@ class TestCompleteBurnsToken:
         _ready_for_completion()
         obj, raw = SetupToken.issue()
         client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         obj.refresh_from_db()
         assert obj.consumed_at is not None
@@ -579,7 +579,7 @@ class TestCompleteBurnsToken:
         _ready_for_completion()
         _obj, raw = SetupToken.issue()
         client.post(
-            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+            COMPLETE_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
         )
         assert SetupToken.verify(raw) is None
 
@@ -593,7 +593,7 @@ class TestCheckOrdering:
     def test_disallowed_host_returns_403_not_410_when_setup_is_complete(self, client):
         """
         GIVEN setup has been completed
-        WHEN a request arrives from a host outside ORC_SETUP_ALLOWED_HOSTS
+        WHEN a request arrives from a host outside LCTL_SETUP_ALLOWED_HOSTS
         THEN 403 is returned, not the 410 that would reveal completion
         """
         state = _connect_provider()

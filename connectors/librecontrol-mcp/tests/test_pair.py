@@ -1,4 +1,4 @@
-"""Tests for orc_mcp.pair and OrcBackendClient auth-header selection."""
+"""Tests for librecontrol_mcp.pair and OrcBackendClient auth-header selection."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ import json
 import httpx
 import pytest
 
-from orc_mcp.client import OrcBackendClient
-from orc_mcp.pair import pair
-from orc_mcp.signing import generate_keypair, load_or_create_identity
+from librecontrol_mcp.client import OrcBackendClient
+from librecontrol_mcp.pair import pair
+from librecontrol_mcp.signing import generate_keypair, load_or_create_identity
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +65,7 @@ def test_pair_saves_identity_to_config_dir(tmp_path, monkeypatch):
     monkeypatch.setenv("HOME", str(tmp_path))
     pair("CODE", "http://test", _transport=_mock_claim_transport())
 
-    config_dir = tmp_path / ".config" / "openremote-control"
+    config_dir = tmp_path / ".config" / "librecontrol"
     assert (config_dir / "connector_key").exists()
     assert (config_dir / "connector.json").exists()
 
@@ -79,7 +79,7 @@ def test_pair_key_file_is_mode_0600(tmp_path, monkeypatch):
     """GIVEN a saved identity THEN the key file has mode 0600."""
     monkeypatch.setenv("HOME", str(tmp_path))
     pair("CODE", "http://test", _transport=_mock_claim_transport())
-    key_file = tmp_path / ".config" / "openremote-control" / "connector_key"
+    key_file = tmp_path / ".config" / "librecontrol" / "connector_key"
     mode = oct(key_file.stat().st_mode)[-4:]
     assert mode == "0600"
 
@@ -128,7 +128,7 @@ def _make_client(handler, *, signing_identity=None, token="", **kw):
 
 
 def test_client_uses_signing_headers_when_identity_present():
-    """GIVEN a loaded signing identity WHEN a request is made THEN X-ORC-Signature is present."""
+    """GIVEN a loaded signing identity WHEN a request is made THEN X-LCTL-Signature is present."""
     seen = {}
     priv = generate_keypair()
     meta = {"connector_id": "conn-id", "key_id": "key-id", "backend_url": "http://test"}
@@ -140,11 +140,11 @@ def test_client_uses_signing_headers_when_identity_present():
     client = _make_client(handler, signing_identity=(priv, meta))
     client.notify("hello")
 
-    assert "x-orc-signature" in seen
-    assert "x-orc-connector-id" in seen
-    assert "x-orc-key-id" in seen
-    assert "x-orc-timestamp" in seen
-    assert "x-orc-nonce" in seen
+    assert "x-lctl-signature" in seen
+    assert "x-lctl-connector-id" in seen
+    assert "x-lctl-key-id" in seen
+    assert "x-lctl-timestamp" in seen
+    assert "x-lctl-nonce" in seen
     assert "authorization" not in seen
 
 
@@ -160,17 +160,17 @@ def test_client_uses_bearer_when_no_identity_but_token_set():
     client.notify("hello")
 
     assert seen["auth"] == "Bearer secret-token"
-    assert "x-orc-signature" not in seen
+    assert "x-lctl-signature" not in seen
 
 
 def test_client_signing_headers_present_on_ask_post():
-    """GIVEN a signing identity WHEN ask() POSTs THEN X-ORC-Signature is in the POST."""
+    """GIVEN a signing identity WHEN ask() POSTs THEN X-LCTL-Signature is in the POST."""
     calls = []
     priv = generate_keypair()
     meta = {"connector_id": "c", "key_id": "k", "backend_url": "http://test"}
 
     def handler(req: httpx.Request) -> httpx.Response:
-        calls.append({"path": req.url.path, "sig": req.headers.get("x-orc-signature")})
+        calls.append({"path": req.url.path, "sig": req.headers.get("x-lctl-signature")})
         if req.url.path == "/api/connectors/ask":
             return httpx.Response(201, json={"nonce": "N1", "status": "pending"})
         return httpx.Response(200, json={"status": "answered", "answer": "yes"})
@@ -184,7 +184,7 @@ def test_client_signing_headers_present_on_ask_post():
 
 
 def test_client_signing_headers_present_on_get_poll():
-    """GIVEN a signing identity WHEN the GET poll runs THEN X-ORC-Signature is in the GET."""
+    """GIVEN a signing identity WHEN the GET poll runs THEN X-LCTL-Signature is in the GET."""
     seen_get = {}
     priv = generate_keypair()
     meta = {"connector_id": "c", "key_id": "k", "backend_url": "http://test"}
@@ -198,7 +198,7 @@ def test_client_signing_headers_present_on_get_poll():
     client = _make_client(handler, signing_identity=(priv, meta))
     client.ask("Q?")
 
-    assert "x-orc-signature" in seen_get
+    assert "x-lctl-signature" in seen_get
 
 
 def test_client_no_auth_header_when_no_identity_and_no_token():
@@ -207,7 +207,7 @@ def test_client_no_auth_header_when_no_identity_and_no_token():
 
     def handler(req: httpx.Request) -> httpx.Response:
         seen["auth"] = req.headers.get("authorization")
-        seen["sig"] = req.headers.get("x-orc-signature")
+        seen["sig"] = req.headers.get("x-lctl-signature")
         return httpx.Response(200, json={"ok": True})
 
     client = _make_client(handler, signing_identity=None, token="")

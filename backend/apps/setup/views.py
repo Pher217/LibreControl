@@ -118,7 +118,7 @@ class TelegramTokenView(ProvidersStageView):
         except telegram_flow.TelegramError as exc:
             return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            update_env(Path(settings.ORC_SETUP_ENV_FILE), {"TELEGRAM_BOT_TOKEN": token})
+            update_env(Path(settings.LCTL_SETUP_ENV_FILE), {"TELEGRAM_BOT_TOKEN": token})
         except EnvWriteError as exc:
             return Response({"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         # Minted only after the token is known good and stored: a challenge
@@ -155,7 +155,7 @@ class TelegramDiscoverView(ProvidersStageView):
         state, blocked = self._stage_guard()
         if blocked is not None:
             return blocked
-        env_path = Path(settings.ORC_SETUP_ENV_FILE)
+        env_path = Path(settings.LCTL_SETUP_ENV_FILE)
         token = read_env(env_path).get("TELEGRAM_BOT_TOKEN", "")
         if not token:
             return Response(
@@ -185,8 +185,8 @@ class TelegramDiscoverView(ProvidersStageView):
             )
         updates = {
             "TELEGRAM_FORUM_CHAT_ID": found["chat_id"],
-            "ORC_PROMPT_CHAT_ID": found["chat_id"],
-            "ORC_MESSAGING_PLATFORM": "telegram",
+            "LCTL_PROMPT_CHAT_ID": found["chat_id"],
+            "LCTL_MESSAGING_PLATFORM": "telegram",
             "TELEGRAM_ALLOWED_CHAT_IDS": found["user_id"],
         }
         try:

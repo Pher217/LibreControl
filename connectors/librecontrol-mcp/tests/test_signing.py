@@ -1,4 +1,4 @@
-"""Tests for orc_mcp.signing — pure unit, no network, no filesystem writes."""
+"""Tests for librecontrol_mcp.signing — pure unit, no network, no filesystem writes."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import time
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
-from orc_mcp.signing import generate_keypair, public_key_b64, sign_headers
+from librecontrol_mcp.signing import generate_keypair, public_key_b64, sign_headers
 
 
 # ---------------------------------------------------------------------------
@@ -51,10 +51,10 @@ def test_public_key_b64_is_standard_base64():
 
 
 def test_sign_headers_contains_all_five_fields():
-    """GIVEN a POST request WHEN sign_headers is called THEN all five X-ORC-* headers are present."""
+    """GIVEN a POST request WHEN sign_headers is called THEN all five X-LCTL-* headers are present."""
     priv = generate_keypair()
     headers = sign_headers(priv, "conn-1", "key-1", "POST", "/api/connectors/ask", b'{"hello":"world"}')
-    for field in ("X-ORC-Connector-Id", "X-ORC-Key-Id", "X-ORC-Timestamp", "X-ORC-Nonce", "X-ORC-Signature"):
+    for field in ("X-LCTL-Connector-Id", "X-LCTL-Key-Id", "X-LCTL-Timestamp", "X-LCTL-Nonce", "X-LCTL-Signature"):
         assert field in headers, f"Missing header: {field}"
 
 
@@ -62,15 +62,15 @@ def test_sign_headers_connector_and_key_ids_match():
     """GIVEN specific ids WHEN sign_headers is called THEN the headers carry those exact ids."""
     priv = generate_keypair()
     headers = sign_headers(priv, "my-connector", "my-key", "POST", "/api/connectors/notify", b"")
-    assert headers["X-ORC-Connector-Id"] == "my-connector"
-    assert headers["X-ORC-Key-Id"] == "my-key"
+    assert headers["X-LCTL-Connector-Id"] == "my-connector"
+    assert headers["X-LCTL-Key-Id"] == "my-key"
 
 
 def test_sign_headers_timestamp_is_recent_integer():
     """GIVEN a signed request THEN the timestamp is a decimal integer within ±5 s of now."""
     priv = generate_keypair()
     headers = sign_headers(priv, "c", "k", "GET", "/api/connectors/result/N", b"")
-    ts = int(headers["X-ORC-Timestamp"])
+    ts = int(headers["X-LCTL-Timestamp"])
     assert abs(ts - int(time.time())) <= 5
 
 
@@ -78,7 +78,7 @@ def test_sign_headers_nonce_is_16_hex_chars():
     """GIVEN a signed request THEN the nonce is a 16-char lowercase hex string (secrets.token_hex(8))."""
     priv = generate_keypair()
     headers = sign_headers(priv, "c", "k", "POST", "/api/connectors/ask", b"body")
-    nonce = headers["X-ORC-Nonce"]
+    nonce = headers["X-LCTL-Nonce"]
     assert len(nonce) == 16
     int(nonce, 16)  # must be valid hex
 
@@ -93,9 +93,9 @@ def test_sign_headers_signature_verifies_post():
         "POST",
         "/api/connectors/ask",
         body,
-        headers["X-ORC-Timestamp"],
-        headers["X-ORC-Nonce"],
-        headers["X-ORC-Signature"],
+        headers["X-LCTL-Timestamp"],
+        headers["X-LCTL-Nonce"],
+        headers["X-LCTL-Signature"],
     )
 
 
@@ -108,9 +108,9 @@ def test_sign_headers_signature_verifies_get_empty_body():
         "GET",
         "/api/connectors/result/NONCE123",
         b"",
-        headers["X-ORC-Timestamp"],
-        headers["X-ORC-Nonce"],
-        headers["X-ORC-Signature"],
+        headers["X-LCTL-Timestamp"],
+        headers["X-LCTL-Nonce"],
+        headers["X-LCTL-Signature"],
     )
 
 
@@ -119,7 +119,7 @@ def test_sign_headers_ts_and_nonce_vary_across_calls():
     priv = generate_keypair()
     h1 = sign_headers(priv, "c", "k", "POST", "/p", b"")
     h2 = sign_headers(priv, "c", "k", "POST", "/p", b"")
-    assert h1["X-ORC-Nonce"] != h2["X-ORC-Nonce"]
+    assert h1["X-LCTL-Nonce"] != h2["X-LCTL-Nonce"]
 
 
 def test_sign_headers_wrong_body_fails_verification():
@@ -136,9 +136,9 @@ def test_sign_headers_wrong_body_fails_verification():
             "POST",
             "/api/connectors/approve",
             body_b,
-            headers["X-ORC-Timestamp"],
-            headers["X-ORC-Nonce"],
-            headers["X-ORC-Signature"],
+            headers["X-LCTL-Timestamp"],
+            headers["X-LCTL-Nonce"],
+            headers["X-LCTL-Signature"],
         )
         assert False, "Should have raised InvalidSignature"
     except InvalidSignature:
@@ -157,16 +157,16 @@ def test_sign_headers_method_is_uppercased():
         "POST",
         "/api/connectors/ask",
         body,
-        h_lower["X-ORC-Timestamp"],
-        h_lower["X-ORC-Nonce"],
-        h_lower["X-ORC-Signature"],
+        h_lower["X-LCTL-Timestamp"],
+        h_lower["X-LCTL-Nonce"],
+        h_lower["X-LCTL-Signature"],
     )
     _verify(
         priv.public_key(),
         "POST",
         "/api/connectors/ask",
         body,
-        h_upper["X-ORC-Timestamp"],
-        h_upper["X-ORC-Nonce"],
-        h_upper["X-ORC-Signature"],
+        h_upper["X-LCTL-Timestamp"],
+        h_upper["X-LCTL-Nonce"],
+        h_upper["X-LCTL-Signature"],
     )

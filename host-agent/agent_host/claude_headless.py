@@ -15,13 +15,13 @@ log = logging.getLogger(__name__)
 def _resolve_claude_bin() -> str | None:
     """Locate the claude binary cross-platform.
 
-    Order: explicit ``$ORC_CLAUDE_BIN`` override → PATH lookup (finds
+    Order: explicit ``$LCTL_CLAUDE_BIN`` override → PATH lookup (finds
     ``claude`` / ``claude.cmd`` / ``claude.exe`` on Windows). The daemon's PATH
-    is augmented by run-daemon.sh (``$ORC_PATH_EXTRA``) so ``~/.local/bin`` is
+    is augmented by run-daemon.sh (``$LCTL_PATH_EXTRA``) so ``~/.local/bin`` is
     reachable under launchd. Returns None when not found so the caller fails
     with a clear message instead of exec'ing a hardcoded, machine-specific path.
     """
-    override = os.environ.get("ORC_CLAUDE_BIN")
+    override = os.environ.get("LCTL_CLAUDE_BIN")
     if override:
         return override
     return shutil.which("claude")
@@ -101,7 +101,7 @@ def _run_once(claude_bin, prompt, session_args, work_dir, env, timeout) -> dict:
     except FileNotFoundError:
         log.warning("claude_headless: claude binary not found (%r)", claude_bin)
         return {
-            "text": "(headless run failed: 'claude' not found on PATH; set ORC_CLAUDE_BIN)",
+            "text": "(headless run failed: 'claude' not found on PATH; set LCTL_CLAUDE_BIN)",
             "is_error": True,
         }
     except Exception as exc:
@@ -189,7 +189,7 @@ def _stream_once(claude_bin, prompt, session_args, work_dir, env, timeout, on_ev
         )
     except FileNotFoundError:
         return ({
-            "text": "(headless run failed: 'claude' not found on PATH; set ORC_CLAUDE_BIN)",
+            "text": "(headless run failed: 'claude' not found on PATH; set LCTL_CLAUDE_BIN)",
             "is_error": True,
         }, False)
     except Exception as exc:

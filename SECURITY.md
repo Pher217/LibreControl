@@ -53,7 +53,7 @@ In scope:
 
 - The Django backend (`backend/`).
 - The host daemon (`host-agent/`).
-- The connectors (`connectors/orc-mcp/`, `connectors/messaging-gateway/`).
+- The connectors (`connectors/librecontrol-mcp/`, `connectors/messaging-gateway/`).
 - Authentication flows, session management, and credential storage.
 - Policy enforcement, approval workflows, and audit pipelines.
 - Runtime adapters and PTY supervision.
@@ -68,7 +68,7 @@ Out of scope:
 
 ## Trust Model — read this before self-hosting
 
-OpenRemote-Control's core feature is **remote code execution by design**: a message in
+LibreControl's core feature is **remote code execution by design**: a message in
 your chat surface drives a coding agent on your machine. The default engine runs
 `claude` with `--permission-mode bypassPermissions` — no per-tool approval gate.
 This is **trusted-host mode**, and it is a deliberate trade-off, not an oversight:
@@ -89,7 +89,7 @@ This is **trusted-host mode**, and it is a deliberate trade-off, not an oversigh
   enrolled host**, and a compromised Telegram account of an allowlisted user
   equals code execution. Keep the allowlist minimal, use a dedicated bot token,
   and rotate it on any suspicion.
-- If you want a per-action gate, run `ORC_HEADLESS_ENGINE=sdk`, which routes every
+- If you want a per-action gate, run `LCTL_HEADLESS_ENGINE=sdk`, which routes every
   tool call through an Allow/Deny prompt in the chat before it executes.
 
 ### What the input classifier does and does not cover
@@ -99,9 +99,9 @@ gate. It is not. Be precise about its scope:
 
 | Path | Engine | Classifier runs? | What actually gates it |
 |---|---|---|---|
-| Headless drive (**the default**) | `ORC_HEADLESS_ENGINE=interactive`, or unset | **No** | Telegram identity allowlist only. The agent runs with `bypassPermissions`. |
-| Headless drive, opt-in | `ORC_HEADLESS_ENGINE=sdk` | No | Per-tool Allow/Deny prompt in chat |
-| Raw PTY injection | `orc run` / tmux | Yes | Classifier + approval tap |
+| Headless drive (**the default**) | `LCTL_HEADLESS_ENGINE=interactive`, or unset | **No** | Telegram identity allowlist only. The agent runs with `bypassPermissions`. |
+| Headless drive, opt-in | `LCTL_HEADLESS_ENGINE=sdk` | No | Per-tool Allow/Deny prompt in chat |
+| Raw PTY injection | `librectl run` / tmux | Yes | Classifier + approval tap |
 
 Two consequences worth stating plainly:
 

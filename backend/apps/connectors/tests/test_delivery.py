@@ -107,12 +107,12 @@ class TestStartSessionTailStartDispatch:
 class TestStartSessionDelivery:
     def test_announces_to_telegram_when_chat_id_configured(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=telegram and ORC_PROMPT_CHAT_ID is set
+        GIVEN LCTL_MESSAGING_PLATFORM=telegram and LCTL_PROMPT_CHAT_ID is set
         WHEN service.start_session() is called
         THEN the announcement is sent once via telegram send_message; no GatewayMessage rows created
         """
-        settings.ORC_MESSAGING_PLATFORM = "telegram"
-        settings.ORC_PROMPT_CHAT_ID = "777"
+        settings.LCTL_MESSAGING_PLATFORM = "telegram"
+        settings.LCTL_PROMPT_CHAT_ID = "777"
 
         calls, spy = _make_async_spy()
         import apps.telegram.telegram_api as tg_api
@@ -136,12 +136,12 @@ class TestStartSessionDelivery:
 
     def test_no_announcement_when_no_surface_configured(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=telegram and ORC_PROMPT_CHAT_ID is empty
+        GIVEN LCTL_MESSAGING_PLATFORM=telegram and LCTL_PROMPT_CHAT_ID is empty
         WHEN service.start_session() is called
         THEN no delivery happens and the session is still created
         """
-        settings.ORC_MESSAGING_PLATFORM = "telegram"
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_MESSAGING_PLATFORM = "telegram"
+        settings.LCTL_PROMPT_CHAT_ID = ""
         # routing.py falls back to TELEGRAM_FORUM_CHAT_ID when the prompt chat
         # id is empty — clear it too so this test is isolated from any real
         # forum id set in the environment's .env.
@@ -171,12 +171,12 @@ class TestStartSessionDelivery:
 class TestAskDeliveryTelegram:
     def test_telegram_send_called_when_active(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=telegram and ORC_PROMPT_CHAT_ID is set
+        GIVEN LCTL_MESSAGING_PLATFORM=telegram and LCTL_PROMPT_CHAT_ID is set
         WHEN service.ask() is called
         THEN send_message is invoked once with the correct chat_id; no GatewayMessage rows created
         """
-        settings.ORC_MESSAGING_PLATFORM = "telegram"
-        settings.ORC_PROMPT_CHAT_ID = "999"
+        settings.LCTL_MESSAGING_PLATFORM = "telegram"
+        settings.LCTL_PROMPT_CHAT_ID = "999"
 
         calls, spy = _make_async_spy()
         import apps.telegram.telegram_api as tg_api
@@ -199,12 +199,12 @@ class TestAskDeliveryTelegram:
 
     def test_approve_calls_telegram_send(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=telegram and ORC_PROMPT_CHAT_ID is set
+        GIVEN LCTL_MESSAGING_PLATFORM=telegram and LCTL_PROMPT_CHAT_ID is set
         WHEN service.approve() is called
         THEN send_message is invoked once; no GatewayMessage rows created
         """
-        settings.ORC_MESSAGING_PLATFORM = "telegram"
-        settings.ORC_PROMPT_CHAT_ID = "111"
+        settings.LCTL_MESSAGING_PLATFORM = "telegram"
+        settings.LCTL_PROMPT_CHAT_ID = "111"
 
         calls, spy = _make_async_spy()
         import apps.telegram.telegram_api as tg_api
@@ -236,16 +236,16 @@ class TestAskDeliveryWhatsApp:
         self, settings, monkeypatch
     ):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=whatsapp and ORC_PROMPT_WHATSAPP is set
-              (with ORC_PROMPT_SLACK also set — must NOT enqueue to slack)
+        GIVEN LCTL_MESSAGING_PLATFORM=whatsapp and LCTL_PROMPT_WHATSAPP is set
+              (with LCTL_PROMPT_SLACK also set — must NOT enqueue to slack)
         WHEN service.ask() is called
         THEN exactly one GatewayMessage with platform=whatsapp is created;
              telegram send_message is NOT called
         """
-        settings.ORC_MESSAGING_PLATFORM = "whatsapp"
-        settings.ORC_PROMPT_WHATSAPP = "+41791234567"
-        settings.ORC_PROMPT_SLACK = "#general"  # must be ignored
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_MESSAGING_PLATFORM = "whatsapp"
+        settings.LCTL_PROMPT_WHATSAPP = "+41791234567"
+        settings.LCTL_PROMPT_SLACK = "#general"  # must be ignored
+        settings.LCTL_PROMPT_CHAT_ID = ""
 
         tg_calls, tg_spy = _make_async_spy()
         import apps.telegram.telegram_api as tg_api
@@ -279,14 +279,14 @@ class TestAskDeliveryWhatsApp:
 class TestNotifyDeliveryWhatsApp:
     def test_notify_enqueues_gateway_message_for_whatsapp(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=whatsapp and ORC_PROMPT_WHATSAPP is set
+        GIVEN LCTL_MESSAGING_PLATFORM=whatsapp and LCTL_PROMPT_WHATSAPP is set
         WHEN service.notify() is called
         THEN exactly one GatewayMessage with platform=whatsapp is created;
              telegram send_message is NOT called
         """
-        settings.ORC_MESSAGING_PLATFORM = "whatsapp"
-        settings.ORC_PROMPT_WHATSAPP = "+41797654321"
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_MESSAGING_PLATFORM = "whatsapp"
+        settings.LCTL_PROMPT_WHATSAPP = "+41797654321"
+        settings.LCTL_PROMPT_CHAT_ID = ""
 
         tg_calls, tg_spy = _make_async_spy()
         import apps.telegram.telegram_api as tg_api
@@ -318,12 +318,12 @@ class TestNotifyDeliveryWhatsApp:
 class TestUnconfiguredRecipient:
     def test_ask_no_send_when_recipient_empty(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=telegram but ORC_PROMPT_CHAT_ID is empty
+        GIVEN LCTL_MESSAGING_PLATFORM=telegram but LCTL_PROMPT_CHAT_ID is empty
         WHEN service.ask() is called
         THEN no send_message call is made and no exception is raised
         """
-        settings.ORC_MESSAGING_PLATFORM = "telegram"
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_MESSAGING_PLATFORM = "telegram"
+        settings.LCTL_PROMPT_CHAT_ID = ""
         # routing.py falls back to TELEGRAM_FORUM_CHAT_ID when the prompt chat
         # id is empty — clear it too so this test is isolated from any real
         # forum id set in the environment's .env.
@@ -349,13 +349,13 @@ class TestUnconfiguredRecipient:
 
     def test_ask_no_send_when_whatsapp_recipient_empty(self, settings, monkeypatch):
         """
-        GIVEN ORC_MESSAGING_PLATFORM=whatsapp but ORC_PROMPT_WHATSAPP is empty
+        GIVEN LCTL_MESSAGING_PLATFORM=whatsapp but LCTL_PROMPT_WHATSAPP is empty
         WHEN service.ask() is called
         THEN no GatewayMessage is created and no exception is raised
         """
-        settings.ORC_MESSAGING_PLATFORM = "whatsapp"
-        settings.ORC_PROMPT_WHATSAPP = ""
-        settings.ORC_PROMPT_CHAT_ID = ""
+        settings.LCTL_MESSAGING_PLATFORM = "whatsapp"
+        settings.LCTL_PROMPT_WHATSAPP = ""
+        settings.LCTL_PROMPT_CHAT_ID = ""
 
         tg_calls, tg_spy = _make_async_spy()
         import apps.telegram.telegram_api as tg_api

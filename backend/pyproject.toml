@@ -1,7 +1,7 @@
 [project]
-name = "openremote-control-backend"
+name = "librecontrol-backend"
 version = "0.1.0"
-description = "Backend for OpenRemote Control"
+description = "Backend for LibreControl"
 requires-python = ">=3.13"
 dependencies = [
     "Django>=5.2,<6.0",

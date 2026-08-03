@@ -1,7 +1,7 @@
 """Tests for agent_host/codex_engine.py — CodexEngine per-turn subprocess driver.
 
 Drives the engine against tests/fake_codex.py (an executable stand-in for the
-codex binary speaking the --json event protocol) selected via ORC_CODEX_BIN.
+codex binary speaking the --json event protocol) selected via LCTL_CODEX_BIN.
 The fake's behavior is controlled by FAKE_CODEX_MODE: echo | crash | tool_step.
 """
 from __future__ import annotations
@@ -34,7 +34,7 @@ class Collector:
 
 
 def _make_engine(monkeypatch, mode, collector):
-    monkeypatch.setenv("ORC_CODEX_BIN", FAKE)
+    monkeypatch.setenv("LCTL_CODEX_BIN", FAKE)
     monkeypatch.setenv("FAKE_CODEX_MODE", mode)
     return CodexEngine(os.getcwd(), collector.on_event, collector.on_turn_complete)
 
@@ -151,7 +151,7 @@ class TestBindInitialSessionIdResumesOnFirstTurn:
         the reply 'echo:hi' was emitted, and turns==[False].
         """
         col = Collector()
-        monkeypatch.setenv("ORC_CODEX_BIN", FAKE)
+        monkeypatch.setenv("LCTL_CODEX_BIN", FAKE)
         monkeypatch.setenv("FAKE_CODEX_MODE", "echo")
         engine = CodexEngine(
             "/tmp",

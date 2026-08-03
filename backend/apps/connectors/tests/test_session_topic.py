@@ -22,8 +22,8 @@ from apps.threads.models import Thread
 
 @pytest.fixture
 def telegram_forum(settings):
-    settings.ORC_MESSAGING_PLATFORM = "telegram"
-    settings.ORC_PROMPT_CHAT_ID = "-100999"
+    settings.LCTL_MESSAGING_PLATFORM = "telegram"
+    settings.LCTL_PROMPT_CHAT_ID = "-100999"
     settings.TELEGRAM_FORUM_CHAT_ID = "-100999"
     return -100999
 

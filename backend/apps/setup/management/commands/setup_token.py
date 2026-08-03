@@ -34,7 +34,7 @@ class Command(BaseCommand):
             type=int,
             default=None,
             metavar="MINUTES",
-            help="Token lifetime in minutes (default: ORC_SETUP_TOKEN_TTL_MINUTES).",
+            help="Token lifetime in minutes (default: LCTL_SETUP_TOKEN_TTL_MINUTES).",
         )
 
     def handle(self, *args, **options):
@@ -51,14 +51,14 @@ class Command(BaseCommand):
 
         ttl = timedelta(minutes=options["ttl"]) if options["ttl"] else None
         _, raw = SetupToken.issue(ttl=ttl)
-        base = settings.ORC_SETUP_BASE_URL.rstrip("/")
+        base = settings.LCTL_SETUP_BASE_URL.rstrip("/")
         url = f"{base}/setup?token={raw}"
 
         if options["url_only"]:
             self.stdout.write(url)
             return
 
-        minutes = options["ttl"] or settings.ORC_SETUP_TOKEN_TTL_MINUTES
+        minutes = options["ttl"] or settings.LCTL_SETUP_TOKEN_TTL_MINUTES
         self.stdout.write(self.style.SUCCESS("Setup wizard ready — open this URL:"))
         self.stdout.write(f"\n  {url}\n")
         self.stdout.write(

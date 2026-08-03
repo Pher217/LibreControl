@@ -1,6 +1,6 @@
 """pty_stream.py — Shared capture/stream loop for PTY sessions.
 
-Extracted from run_cmd.py so that both ``orc-host run`` and the
+Extracted from run_cmd.py so that both ``librectl run`` and the
 ``session.start`` WebSocket handler can share the same streaming logic.
 
 ``stream_pty_output(ws, pty, session_name)``

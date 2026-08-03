@@ -6,6 +6,9 @@ and the API is not yet stable.
 
 ## [Unreleased]
 
+### Changed
+- **Project renamed: OpenRemote Control → LibreControl.** The CLI `orc-host` is now `librectl`; the MCP package `orc-mcp` is now `librecontrol-mcp`; all `ORC_*` environment variables are now `LCTL_*`; the config directory moved from `~/.config/openremote-control/` to `~/.config/librecontrol/`. **Enrolled hosts must re-run `librectl enroll`** — the Ed25519 connector key does not migrate.
+
 ### Added
 - First-run setup wizard backend (`backend/apps/setup`): one-time token gate, singleton stage machine, and an allowlisted atomic `.env` writer ([#120](https://github.com/Pher217/OpenRemote-Control/pull/120)).
 - Setup wizard Telegram connection flow: `POST /api/setup/telegram/token` validates a pasted bot token via getMe, `POST /api/setup/telegram/discover` finds the operator's group via getUpdates, and the `/setup` page now guides both steps instead of only reporting state.

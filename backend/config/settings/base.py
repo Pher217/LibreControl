@@ -88,7 +88,7 @@ ASGI_APPLICATION = "config.asgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB", "openremote_control"),
+        "NAME": os.environ.get("POSTGRES_DB", "librecontrol"),
         "USER": os.environ.get("POSTGRES_USER", "acc_user"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "acc_password"),
         "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
@@ -164,21 +164,21 @@ validate_observe_delivery_mode(OBSERVE_DELIVERY_MODE)
 
 # Universal MCP connector bridge (apps.connectors): shared bearer token a connector
 # must present, and the chat id where connector Prompts (ask/approve) are delivered.
-ORC_CONNECTOR_TOKEN = os.environ.get("ORC_CONNECTOR_TOKEN", "")
-ORC_PROMPT_CHAT_ID = os.environ.get("ORC_PROMPT_CHAT_ID") or os.environ.get(
+LCTL_CONNECTOR_TOKEN = os.environ.get("LCTL_CONNECTOR_TOKEN", "")
+LCTL_PROMPT_CHAT_ID = os.environ.get("LCTL_PROMPT_CHAT_ID") or os.environ.get(
     "TELEGRAM_FORUM_CHAT_ID", ""
 )
 # Multi-host (apps.hostlink): pre-shared one-time enrollment secret a host daemon
 # presents once to receive a per-host token.
-ORC_ENROLL_SECRET = os.environ.get("ORC_ENROLL_SECRET", "")
+LCTL_ENROLL_SECRET = os.environ.get("LCTL_ENROLL_SECRET", "")
 
 # First-run setup wizard (apps.setup). The wizard is token-gated and reachable
-# only on loopback: ORC_SETUP_ALLOWED_HOSTS pins the Host header, which defeats
+# only on loopback: LCTL_SETUP_ALLOWED_HOSTS pins the Host header, which defeats
 # DNS rebinding from a malicious page (a REMOTE_ADDR check would instead break
 # under Docker, where the peer address is the bridge gateway, not 127.0.0.1).
-ORC_SETUP_ALLOWED_HOSTS = [
+LCTL_SETUP_ALLOWED_HOSTS = [
     h.strip()
-    for h in os.environ.get("ORC_SETUP_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    for h in os.environ.get("LCTL_SETUP_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if h.strip()
 ]
 # Pointing the wizard at a routable name puts a credential-collecting surface on
@@ -197,45 +197,45 @@ def _normalise_setup_host(raw: str) -> str:
 
 
 # "0" and "false" are truthy strings, so an operator writing
-# ORC_SETUP_ALLOW_NONLOOPBACK=0 to *disable* the override would have enabled it.
-if os.environ.get("ORC_SETUP_ALLOW_NONLOOPBACK", "").strip().lower() not in {
+# LCTL_SETUP_ALLOW_NONLOOPBACK=0 to *disable* the override would have enabled it.
+if os.environ.get("LCTL_SETUP_ALLOW_NONLOOPBACK", "").strip().lower() not in {
     "1",
     "true",
     "yes",
     "on",
 }:
     _non_loopback = [
-        h for h in ORC_SETUP_ALLOWED_HOSTS if _normalise_setup_host(h) not in _LOOPBACK_HOSTS
+        h for h in LCTL_SETUP_ALLOWED_HOSTS if _normalise_setup_host(h) not in _LOOPBACK_HOSTS
     ]
     if _non_loopback:
         raise ImproperlyConfigured(
-            f"ORC_SETUP_ALLOWED_HOSTS contains non-loopback entries {_non_loopback}. "
+            f"LCTL_SETUP_ALLOWED_HOSTS contains non-loopback entries {_non_loopback}. "
             "The setup wizard collects credentials and is meant for localhost only. "
-            "Set ORC_SETUP_ALLOW_NONLOOPBACK=1 if you really intend this."
+            "Set LCTL_SETUP_ALLOW_NONLOOPBACK=1 if you really intend this."
         )
 # Base URL printed by `manage.py setup_token` — where the operator's browser opens.
-ORC_SETUP_BASE_URL = os.environ.get("ORC_SETUP_BASE_URL", "http://127.0.0.1:8000")
+LCTL_SETUP_BASE_URL = os.environ.get("LCTL_SETUP_BASE_URL", "http://127.0.0.1:8000")
 # Lifetime of a setup token / setup session cookie, in minutes.
-ORC_SETUP_TOKEN_TTL_MINUTES = int(os.environ.get("ORC_SETUP_TOKEN_TTL_MINUTES", "30"))
+LCTL_SETUP_TOKEN_TTL_MINUTES = int(os.environ.get("LCTL_SETUP_TOKEN_TTL_MINUTES", "30"))
 # The .env file the wizard writes collected credentials into.
-ORC_SETUP_ENV_FILE = os.environ.get("ORC_SETUP_ENV_FILE", str(BASE_DIR.parent / "deploy" / ".env"))
+LCTL_SETUP_ENV_FILE = os.environ.get("LCTL_SETUP_ENV_FILE", str(BASE_DIR.parent / "deploy" / ".env"))
 
 # Public backend URL embedded in QR pairing payloads (`/pair`, `manage.py orc_pair`).
 # Empty => the pairing payload degrades to just the code (manual --backend still works).
-ORC_PUBLIC_BASE_URL = os.environ.get("ORC_PUBLIC_BASE_URL", "")
+LCTL_PUBLIC_BASE_URL = os.environ.get("LCTL_PUBLIC_BASE_URL", "")
 
-# The single messaging app of choice. ORC is a single-platform aggregator: every
+# The single messaging app of choice. LibreControl is a single-platform aggregator: every
 # session and prompt the operator follows flows to ONE app. One of:
 # telegram | whatsapp | slack | signal | imessage | discord. Defaults to telegram.
-ORC_MESSAGING_PLATFORM = (os.environ.get("ORC_MESSAGING_PLATFORM") or "telegram").strip().lower()
+LCTL_MESSAGING_PLATFORM = (os.environ.get("LCTL_MESSAGING_PLATFORM") or "telegram").strip().lower()
 
 # Messaging gateway (apps.gateway). Node sidecar delivers to WhatsApp/Slack/Discord/Signal/iMessage.
 MESSAGING_GATEWAY_TOKEN = os.environ.get("MESSAGING_GATEWAY_TOKEN", "")
-ORC_PROMPT_WHATSAPP = os.environ.get("ORC_PROMPT_WHATSAPP", "")
-ORC_PROMPT_SLACK    = os.environ.get("ORC_PROMPT_SLACK", "")
-ORC_PROMPT_DISCORD  = os.environ.get("ORC_PROMPT_DISCORD", "")
-ORC_PROMPT_SIGNAL   = os.environ.get("ORC_PROMPT_SIGNAL", "")
-ORC_PROMPT_IMESSAGE = os.environ.get("ORC_PROMPT_IMESSAGE", "")
+LCTL_PROMPT_WHATSAPP = os.environ.get("LCTL_PROMPT_WHATSAPP", "")
+LCTL_PROMPT_SLACK    = os.environ.get("LCTL_PROMPT_SLACK", "")
+LCTL_PROMPT_DISCORD  = os.environ.get("LCTL_PROMPT_DISCORD", "")
+LCTL_PROMPT_SIGNAL   = os.environ.get("LCTL_PROMPT_SIGNAL", "")
+LCTL_PROMPT_IMESSAGE = os.environ.get("LCTL_PROMPT_IMESSAGE", "")
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

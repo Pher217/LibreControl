@@ -5,7 +5,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: openremote_control
+      POSTGRES_DB: librecontrol
       POSTGRES_USER: acc_user
       POSTGRES_PASSWORD: acc_password
     volumes:

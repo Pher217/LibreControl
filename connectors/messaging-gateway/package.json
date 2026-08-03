@@ -1,7 +1,7 @@
 {
   "name": "orc-messaging-gateway",
   "version": "0.1.0",
-  "description": "WhatsApp/Slack/Discord sidecar for OpenRemote-Control backend",
+  "description": "WhatsApp/Slack/Discord sidecar for LibreControl backend",
   "type": "module",
   "scripts": {
     "build": "tsc",

@@ -33,7 +33,7 @@ from apps.setup.models import SESSION_COOKIE_NAME, SetupState, SetupToken
 
 #: Header the wizard's XHRs use. The initial page load uses ``?token=`` instead,
 #: since a browser navigation cannot set headers.
-TOKEN_HEADER = "HTTP_X_ORC_SETUP_TOKEN"
+TOKEN_HEADER = "HTTP_X_LCTL_SETUP_TOKEN"
 TOKEN_QUERY_PARAM = "token"
 
 #: Methods that may carry the token in the query string. A state-changing
@@ -91,7 +91,7 @@ def host_allowed(request) -> bool:
     """
     request.get_host()
     host = normalise_host(request.META.get("HTTP_HOST", ""))
-    allowed = {normalise_host(h) for h in settings.ORC_SETUP_ALLOWED_HOSTS}
+    allowed = {normalise_host(h) for h in settings.LCTL_SETUP_ALLOWED_HOSTS}
     return bool(host) and host in allowed
 
 
