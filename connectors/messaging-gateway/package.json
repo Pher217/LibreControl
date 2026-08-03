@@ -1,6 +1,6 @@
 {
-  "name": "orc-messaging-gateway",
-  "version": "0.1.0",
+  "name": "librecontrol-messaging-gateway",
+  "version": "0.2.0",
   "description": "WhatsApp/Slack/Discord sidecar for LibreControl backend",
   "type": "module",
   "scripts": {
