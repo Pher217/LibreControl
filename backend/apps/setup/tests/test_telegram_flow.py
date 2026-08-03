@@ -380,7 +380,7 @@ class TestDiscoverChat:
         with pytest.raises(telegram_flow.TelegramError) as exc_info:
             telegram_flow.discover_chat(RAW_TOKEN, CHALLENGE)
         message = str(exc_info.value)
-        assert "Stop the running OpenRemote-Control bot" in message
+        assert "Stop the running LibreControl bot" in message
 
     def test_request_url_targets_the_bot_getupdates_endpoint(self, monkeypatch):
         """
@@ -410,14 +410,14 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": True, "result": {"username": "orcbot", "id": 1}})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert resp.status_code == 200
             assert read_env(env_path)["TELEGRAM_BOT_TOKEN"] == RAW_TOKEN
@@ -430,14 +430,14 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": True, "result": {"username": "orcbot", "id": 1}})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert RAW_TOKEN not in resp.content.decode()
 
@@ -449,14 +449,14 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": True, "result": {"username": "orcbot", "id": 1}})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             body = resp.json()
             assert body["username"] == "orcbot"
@@ -471,14 +471,14 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": True, "result": {"username": "orcbot", "id": 1}})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             challenge = resp.json()["challenge"]
             assert challenge.startswith("ORC-")
@@ -493,7 +493,7 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": True, "result": {"username": "orcbot", "id": 1}})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             state = SetupState.load()
             state.set_provider("telegram", "connected")
             state.advance_to(SetupState.STAGE_RUNTIMES)
@@ -503,7 +503,7 @@ class TestTelegramTokenView:
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert resp.status_code == 409
             assert "TELEGRAM_BOT_TOKEN" not in read_env(env_path)
@@ -518,14 +518,14 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": False, "description": "Unauthorized"})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert resp.status_code == 400
             assert RAW_TOKEN not in resp.content.decode()
@@ -540,14 +540,14 @@ class TestTelegramTokenView:
         """
         env_path = tmp_path / ".env"
         _patch_client(monkeypatch, {"ok": True, "result": {"username": "orcbot", "id": 1}})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": f"  {RAW_TOKEN}\n"},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert resp.status_code == 200
             assert read_env(env_path)["TELEGRAM_BOT_TOKEN"] == RAW_TOKEN
@@ -559,14 +559,14 @@ class TestTelegramTokenView:
         THEN 400 is returned
         """
         env_path = tmp_path / ".env"
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
                 TOKEN_URL,
                 {"token": "   "},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert resp.status_code == 400
 
@@ -577,7 +577,7 @@ class TestTelegramTokenView:
         THEN 403 is returned
         """
         env_path = tmp_path / ".env"
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             resp = client.post(
                 TOKEN_URL, {"token": RAW_TOKEN}, format="json", HTTP_HOST="localhost"
             )
@@ -590,7 +590,7 @@ class TestTelegramTokenView:
         THEN 410 is returned
         """
         env_path = tmp_path / ".env"
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             state = SetupState.load()
             state.set_provider("telegram", "connected")
             state.advance_to(SetupState.STAGE_RUNTIMES)
@@ -601,7 +601,7 @@ class TestTelegramTokenView:
                 {"token": RAW_TOKEN},
                 format="json",
                 HTTP_HOST="localhost",
-                HTTP_X_ORC_SETUP_TOKEN=raw,
+                HTTP_X_LCTL_SETUP_TOKEN=raw,
             )
             assert resp.status_code == 410
 
@@ -620,10 +620,10 @@ class TestTelegramDiscoverView:
         THEN 400 is returned
         """
         env_path = tmp_path / ".env"
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 400
 
@@ -638,10 +638,10 @@ class TestTelegramDiscoverView:
         env_path.write_text(f"TELEGRAM_BOT_TOKEN='{RAW_TOKEN}'\n", encoding="utf-8")
         _set_challenge()
         _patch_client(monkeypatch, {"ok": True, "result": []})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 200
             assert resp.json() == {"found": False}
@@ -656,10 +656,10 @@ class TestTelegramDiscoverView:
         env_path.write_text(f"TELEGRAM_BOT_TOKEN='{RAW_TOKEN}'\n", encoding="utf-8")
         _set_challenge()
         _patch_client(monkeypatch, {"ok": True, "result": []})
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert SetupState.load().connected_providers == []
 
@@ -669,7 +669,7 @@ class TestTelegramDiscoverView:
         """
         GIVEN a configured token and a group message with a sender
         WHEN POST /telegram/discover finds the chat
-        THEN TELEGRAM_FORUM_CHAT_ID, ORC_PROMPT_CHAT_ID, ORC_MESSAGING_PLATFORM
+        THEN TELEGRAM_FORUM_CHAT_ID, LCTL_PROMPT_CHAT_ID, LCTL_MESSAGING_PLATFORM
              and TELEGRAM_ALLOWED_CHAT_IDS are all written, and the provider is
              marked connected
         """
@@ -683,16 +683,16 @@ class TestTelegramDiscoverView:
                 "result": [_update("supergroup", -100999, title="Ops", is_forum=True, from_id=42)],
             },
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 200
             env = read_env(env_path)
             assert env["TELEGRAM_FORUM_CHAT_ID"] == "-100999"
-            assert env["ORC_PROMPT_CHAT_ID"] == "-100999"
-            assert env["ORC_MESSAGING_PLATFORM"] == "telegram"
+            assert env["LCTL_PROMPT_CHAT_ID"] == "-100999"
+            assert env["LCTL_MESSAGING_PLATFORM"] == "telegram"
             assert env["TELEGRAM_ALLOWED_CHAT_IDS"] == "42"
             assert SetupState.load().connected_providers == ["telegram"]
 
@@ -711,10 +711,10 @@ class TestTelegramDiscoverView:
             monkeypatch,
             {"ok": True, "result": [_update("group", -1, title="Ops", from_id=5)]},
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert SetupState.load().telegram_challenge == ""
 
@@ -732,10 +732,10 @@ class TestTelegramDiscoverView:
             monkeypatch,
             {"ok": True, "result": [_update("group", -1, title="Ops", from_id=5)]},
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 400
             assert fake.urls == []
@@ -756,10 +756,10 @@ class TestTelegramDiscoverView:
                 "result": [_update("group", -55, title="Plain", is_forum=False, from_id=9)],
             },
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 200
             body = resp.json()
@@ -781,10 +781,10 @@ class TestTelegramDiscoverView:
             monkeypatch,
             {"ok": True, "result": [_update("group", -55, title="Plain", from_id=None)]},
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.json() == {"found": False}
             env = read_env(env_path)
@@ -813,10 +813,10 @@ class TestTelegramDiscoverView:
                 ],
             },
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.json() == {"found": False}
             assert "TELEGRAM_ALLOWED_CHAT_IDS" not in read_env(env_path)
@@ -836,10 +836,10 @@ class TestTelegramDiscoverView:
             monkeypatch,
             {"ok": True, "result": [_update("group", -1, title="Ops", from_id=5)]},
         )
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 409
             assert fake.urls == []
@@ -851,7 +851,7 @@ class TestTelegramDiscoverView:
         THEN 401 or 403 is returned
         """
         env_path = tmp_path / ".env"
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             resp = client.post(DISCOVER_URL, format="json", HTTP_HOST="localhost")
             assert resp.status_code == 403
 
@@ -863,13 +863,13 @@ class TestTelegramDiscoverView:
         """
         env_path = tmp_path / ".env"
         env_path.write_text(f"TELEGRAM_BOT_TOKEN='{RAW_TOKEN}'\n", encoding="utf-8")
-        with override_settings(ORC_SETUP_ENV_FILE=str(env_path)):
+        with override_settings(LCTL_SETUP_ENV_FILE=str(env_path)):
             state = SetupState.load()
             state.set_provider("telegram", "connected")
             state.advance_to(SetupState.STAGE_RUNTIMES)
             state.advance_to(SetupState.STAGE_DONE)
             raw = _live_token()
             resp = client.post(
-                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_ORC_SETUP_TOKEN=raw
+                DISCOVER_URL, format="json", HTTP_HOST="localhost", HTTP_X_LCTL_SETUP_TOKEN=raw
             )
             assert resp.status_code == 410

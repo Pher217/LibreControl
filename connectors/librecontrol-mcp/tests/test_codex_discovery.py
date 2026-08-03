@@ -1,4 +1,4 @@
-"""Tests for orc_mcp.codex_discovery.find_codex_session.
+"""Tests for librecontrol_mcp.codex_discovery.find_codex_session.
 
 Scans a sessions dir for rollout-*.jsonl files, reads the first line of each as
 a ``session_meta`` head record whose ``payload`` carries {source, cwd, id},
@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import os
 
-from orc_mcp.codex_discovery import find_codex_session
+from librecontrol_mcp.codex_discovery import find_codex_session
 
 
 def _write_rollout(dirp, name, *, source, cwd, sid, mtime=None):

@@ -1,4 +1,4 @@
-"""Shared HTML utilities for ORC apps.
+"""Shared HTML utilities for LibreControl apps.
 
 Plain-Python utility — no Django imports, no models.
 """

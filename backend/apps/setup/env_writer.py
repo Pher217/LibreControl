@@ -46,7 +46,7 @@ KEY_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
 #: The only keys the setup wizard is permitted to write. Everything governing
 #: the security posture of the stack — SECRET_KEY, POSTGRES_*, ALLOWED_HOSTS,
-#: DEBUG, ORC_SETUP_*, and the enrollment/connector/gateway secrets — is
+#: DEBUG, LCTL_SETUP_*, and the enrollment/connector/gateway secrets — is
 #: deliberately absent and stays operator-only.
 WRITABLE_KEYS = frozenset(
     {
@@ -54,14 +54,14 @@ WRITABLE_KEYS = frozenset(
         "TELEGRAM_BOT_TOKEN",
         "TELEGRAM_FORUM_CHAT_ID",
         "TELEGRAM_ALLOWED_CHAT_IDS",
-        "ORC_PROMPT_CHAT_ID",
+        "LCTL_PROMPT_CHAT_ID",
         # Platform selection + gateway destinations
-        "ORC_MESSAGING_PLATFORM",
-        "ORC_PROMPT_WHATSAPP",
-        "ORC_PROMPT_SLACK",
-        "ORC_PROMPT_DISCORD",
-        "ORC_PROMPT_SIGNAL",
-        "ORC_PROMPT_IMESSAGE",
+        "LCTL_MESSAGING_PLATFORM",
+        "LCTL_PROMPT_WHATSAPP",
+        "LCTL_PROMPT_SLACK",
+        "LCTL_PROMPT_DISCORD",
+        "LCTL_PROMPT_SIGNAL",
+        "LCTL_PROMPT_IMESSAGE",
         # LLM providers
         "ANTHROPIC_API_KEY",
         "OPENAI_API_KEY",
@@ -171,7 +171,7 @@ def update_env(path: Path, updates: dict[str, str]) -> None:
     if not path.parent.is_dir():
         raise EnvWriteError(
             f"env directory does not exist: {path.parent}. "
-            "Set ORC_SETUP_ENV_FILE to a path inside a writable mounted directory."
+            "Set LCTL_SETUP_ENV_FILE to a path inside a writable mounted directory."
         )
 
     with _locked(path):

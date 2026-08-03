@@ -49,7 +49,7 @@ _headless_locks: dict[str, asyncio.Lock] = {}
 # suppress the tail during a live-streamed drive (two-writer dedup).
 _transcript_tails: dict[str, TranscriptTail] = {}
 
-# Persistent interactive engines (ORC_HEADLESS_ENGINE=interactive), keyed by
+# Persistent interactive engines (LCTL_HEADLESS_ENGINE=interactive), keyed by
 # claude_session_id. One long-lived `claude -p` stream-json process each —
 # spawned on first prompt, stopped on daemon shutdown or turn timeout.
 _engines: dict = {}
@@ -244,7 +244,7 @@ def handle_host_command(
             )
             return
         # Ownership guard: pty.inject is broadcast to every host ws connection in
-        # the host group (the daemon + each `orc run`). Only the process that
+        # the host group (the daemon + each `librectl run`). Only the process that
         # started the session may inject — otherwise the keystrokes are duplicated
         # N times. When owns_session is None (e.g. unit tests), no filtering.
         if owns_session is not None and not owns_session(session_name):
@@ -428,12 +428,12 @@ def handle_host_command(
                     tail.drive_started()
                 success = False
                 try:
-                    # Engine select: ORC_HEADLESS_ENGINE=interactive keeps ONE
+                    # Engine select: LCTL_HEADLESS_ENGINE=interactive keeps ONE
                     # persistent `claude -p` stream-json process per session
                     # (no per-turn respawn); =sdk runs via the Agent SDK with
                     # per-tool chat approval. Default streams `claude -p`
                     # step-by-step, one process per turn.
-                    engine_mode = os.environ.get("ORC_HEADLESS_ENGINE", "").lower()
+                    engine_mode = os.environ.get("LCTL_HEADLESS_ENGINE", "").lower()
                     use_sdk = engine_mode == "sdk"
                     cfg = load() if use_sdk else None
                     if provider == "codex":
@@ -708,7 +708,7 @@ async def run_sender(
 
     if on_command is None:
         # Production daemon: only inject sessions this process started (the daemon
-        # owns session.start sessions; `orc run` sessions belong to their own
+        # owns session.start sessions; `librectl run` sessions belong to their own
         # process). This is what prevents duplicate injection across the host group.
         from agent_host.pty_session import was_started_here  # noqa: PLC0415
 

@@ -61,14 +61,14 @@ def test_python_m_agent_host_cli_no_args_exits_nonzero():
 
 def test_run_subcommand_dispatches_to_cmd_run(monkeypatch):
     """
-    GIVEN `orc-host run echo hi` on argv
+    GIVEN `librectl run echo hi` on argv
     WHEN main() parses and dispatches
     THEN run_cmd.cmd_run is called with args.command == ["echo", "hi"].
 
     Regression: the subparsers dest was "command", colliding with the `run`
     subcommand's own positional "command" — the positional overwrote the chosen
     subcommand, so `args.command` became the command list and NO dispatch branch
-    matched. `orc-host run …` silently no-opped (exit 0, nothing launched).
+    matched. `librectl run …` silently no-opped (exit 0, nothing launched).
     The unit tests for run only called cmd_run/run_pty directly, bypassing the
     argparse dispatch, so the collision was invisible until a live smoke test.
     """
@@ -83,7 +83,7 @@ def test_run_subcommand_dispatches_to_cmd_run(monkeypatch):
         captured["cwd"] = args.cwd
 
     monkeypatch.setattr(run_cmd, "cmd_run", _fake_cmd_run)
-    monkeypatch.setattr(sys, "argv", ["orc-host", "run", "echo", "hi"])
+    monkeypatch.setattr(sys, "argv", ["librectl", "run", "echo", "hi"])
 
     cli.main()
 

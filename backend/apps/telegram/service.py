@@ -282,7 +282,7 @@ async def handle_forum_reply(
         await send(
             forum_chat_id,
             "This session doesn't accept typed input. Start a driveable session "
-            "with `/openremote-control` (or `orc run`) to chat with it.",
+            "with `/librecontrol` (or `librectl run`) to chat with it.",
             message_thread_id=message_thread_id,
         )
         return
@@ -682,19 +682,19 @@ async def _handle_pair_command(chat_id: int, tool: str, label: str) -> None:
     from apps.telegram.telegram_api import send_message, send_photo
 
     code, expires_at = await _create_pairing(tool, label)
-    backend_url = getattr(settings, "ORC_PUBLIC_BASE_URL", "")
+    backend_url = getattr(settings, "LCTL_PUBLIC_BASE_URL", "")
     payload = pairing_payload(code, backend_url)
 
     try:
         png = png_bytes(payload)
-        cmd = f"orc-mcp pair {code}"
+        cmd = f"librecontrol-mcp pair {code}"
         if backend_url:
             cmd += f" --backend {backend_url}"
         caption = f"Pairing code: {code}\nExpires: {expires_at.strftime('%H:%M UTC')}\n\n{cmd}"
         await send_photo(chat_id, png, caption=caption)
     except Exception:
         # Fallback to text if photo send fails (e.g. no bot permission to send media).
-        cmd = f"orc-mcp pair {code}"
+        cmd = f"librecontrol-mcp pair {code}"
         if backend_url:
             cmd += f" --backend {backend_url}"
         await send_message(

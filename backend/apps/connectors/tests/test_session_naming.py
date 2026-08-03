@@ -9,9 +9,9 @@ def test_explicit_name_used_verbatim():
 
 
 def test_auto_name_is_agent_repo_time():
-    n = _compose_session_name("claude", "/Users/x/dev/OpenRemote-Control", "")
-    assert n.startswith("claude · OpenRemote-Control · ")
-    assert n != "claude · OpenRemote-Control"  # has a time component
+    n = _compose_session_name("claude", "/Users/x/dev/LibreControl", "")
+    assert n.startswith("claude · LibreControl · ")
+    assert n != "claude · LibreControl"  # has a time component
 
 
 def test_auto_name_unknown_tool_falls_back_to_session():

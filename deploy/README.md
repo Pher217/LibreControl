@@ -1,4 +1,4 @@
-# OpenRemote-Control — Production Deploy Runbook
+# LibreControl — Production Deploy Runbook
 
 > Single-operator guide. Follow sections in order on a fresh Linux server.
 > All commands are copy-paste-ready. Replace placeholder values (shown as
@@ -40,8 +40,8 @@ Internet
 └──────────────────────────────────────────────┘
 
 2nd machine (developer workstation / CI runner)
-  ├── orc-host daemon  (host-agent)
-  └── orc-mcp bridge  (Cursor / Claude Code / etc.)
+  ├── librectl daemon  (host-agent)
+  └── librecontrol-mcp bridge  (Cursor / Claude Code / etc.)
 
 Mac (separate machine — not a container)
   └── BlueBubbles  (iMessage relay — optional)
@@ -94,12 +94,12 @@ Minimum values to set before proceeding:
 SECRET_KEY            # python -c "import secrets; print(secrets.token_urlsafe(50))"
 APP_DOMAIN / HS_DOMAIN
 POSTGRES_PASSWORD
-ORC_CONNECTOR_TOKEN   # python -c "import secrets; print(secrets.token_hex(32))"
-ORC_ENROLL_SECRET     # python -c "import secrets; print(secrets.token_hex(32))"
+LCTL_CONNECTOR_TOKEN   # python -c "import secrets; print(secrets.token_hex(32))"
+LCTL_ENROLL_SECRET     # python -c "import secrets; print(secrets.token_hex(32))"
 MESSAGING_GATEWAY_TOKEN  # python -c "import secrets; print(secrets.token_hex(32))"
 TELEGRAM_BOT_TOKEN    # from @BotFather
 TELEGRAM_ALLOWED_CHAT_IDS
-ORC_PROMPT_CHAT_ID
+LCTL_PROMPT_CHAT_ID
 ENABLED_PLATFORMS     # e.g. whatsapp,slack,signal
 ```
 
@@ -210,31 +210,31 @@ Setup closes permanently once finished. To re-open it later, run `manage.py setu
 
 ### 5a. Single messaging app of choice
 
-ORC routes every session notification and approval prompt to **one** messaging
-app — not all of them at once.  Set `ORC_MESSAGING_PLATFORM` in `.env` to the
+LibreControl routes every session notification and approval prompt to **one** messaging
+app — not all of them at once.  Set `LCTL_MESSAGING_PLATFORM` in `.env` to the
 app you want:
 
 ```
-ORC_MESSAGING_PLATFORM=telegram   # or: whatsapp | slack | signal | imessage | discord
+LCTL_MESSAGING_PLATFORM=telegram   # or: whatsapp | slack | signal | imessage | discord
 ```
 
 Then configure **only** that platform's recipient variable:
 
-| Platform   | Recipient variable        | Format |
-|------------|--------------------------|--------|
-| `telegram` | `ORC_PROMPT_CHAT_ID`      | Telegram chat ID |
-| `whatsapp` | `ORC_PROMPT_WHATSAPP`     | International phone number, e.g. `+41791234567` |
-| `slack`    | `ORC_PROMPT_SLACK`        | Channel ID or user ID |
-| `signal`   | `ORC_PROMPT_SIGNAL`       | International phone number |
-| `imessage` | `ORC_PROMPT_IMESSAGE`     | Apple ID email or phone number |
-| `discord`  | `ORC_PROMPT_DISCORD`      | Channel ID |
+| Platform   | Recipient variable     | Format |
+|------------|------------------------|--------|
+| `telegram` | `LCTL_PROMPT_CHAT_ID`  | Telegram chat ID |
+| `whatsapp` | `LCTL_PROMPT_WHATSAPP` | International phone number, e.g. `+41791234567` |
+| `slack`    | `LCTL_PROMPT_SLACK`    | Channel ID or user ID |
+| `signal`   | `LCTL_PROMPT_SIGNAL`   | International phone number |
+| `imessage` | `LCTL_PROMPT_IMESSAGE` | Apple ID email or phone number |
+| `discord`  | `LCTL_PROMPT_DISCORD`  | Channel ID |
 
 Telegram is delivered natively by the backend's `run_telegram_bot` command and
 does not need the gateway sidecar.  For all other platforms, also add the
 chosen platform to `ENABLED_PLATFORMS` so the gateway sidecar activates it.
 
 **This is not a broadcast / multi-app fan-out.**  Only the platform named in
-`ORC_MESSAGING_PLATFORM` receives messages — the others are idle even if their
+`LCTL_MESSAGING_PLATFORM` receives messages — the others are idle even if their
 tokens are present.
 
 ### 5b. Easy-setup web page
@@ -290,7 +290,7 @@ The gateway handles the QR scan automatically on first start.
 Set the prompt recipient in `.env`:
 
 ```
-ORC_PROMPT_WHATSAPP=+41791234567   # international format
+LCTL_PROMPT_WHATSAPP=+41791234567   # international format
 ```
 
 ### 5d. Slack (Socket Mode bot)
@@ -315,7 +315,7 @@ ORC_PROMPT_WHATSAPP=+41791234567   # international format
 Set the prompt recipient in `.env`:
 
 ```
-ORC_PROMPT_SLACK=C01234ABCDE   # channel ID or U01234ABCDE user ID
+LCTL_PROMPT_SLACK=C01234ABCDE   # channel ID or U01234ABCDE user ID
 ```
 
 Restart the gateway after updating `.env`:
@@ -343,7 +343,7 @@ docker compose -f deploy/app/docker-compose.yml restart messaging-gateway
 Set the prompt recipient in `.env`:
 
 ```
-ORC_PROMPT_DISCORD=1234567890123456789
+LCTL_PROMPT_DISCORD=1234567890123456789
 ```
 
 ### 5f. Signal (via signal-cli-rest-api)
@@ -387,7 +387,7 @@ Set the prompt recipient in `.env`:
 ```
 SIGNAL_API_URL=http://signal-cli-rest-api:8080
 SIGNAL_NUMBER=+41791234567   # the registered/linked number
-ORC_PROMPT_SIGNAL=+41791234567
+LCTL_PROMPT_SIGNAL=+41791234567
 ```
 
 > **Risk notice:** Signal does not have an official third-party API.
@@ -428,7 +428,7 @@ Set the prompt recipient in `.env`:
 BLUEBUBBLES_URL=http://192.168.1.x:1234
 BLUEBUBBLES_PASSWORD=change-me
 IMESSAGE_WEBHOOK_PORT=3001
-ORC_PROMPT_IMESSAGE=+41791234567
+LCTL_PROMPT_IMESSAGE=+41791234567
 ```
 
 ---
@@ -490,25 +490,25 @@ sudo tailscale up \
 ```bash
 pipx install ./host-agent
 
-orc-host enroll \
+librectl enroll \
   --backend http://web.<user>.mesh.internal:8000 \
-  --secret <ORC_ENROLL_SECRET>
+  --secret <LCTL_ENROLL_SECRET>
 
-orc-host daemon --runtimes claude_code,codex
+librectl daemon --runtimes claude_code,codex
 ```
 
 Systemd unit:
 
 ```bash
-sudo tee /etc/systemd/system/orc-host.service <<'EOF'
+sudo tee /etc/systemd/system/librectl.service <<'EOF'
 [Unit]
-Description=OpenRemote Control host-agent daemon
+Description=LibreControl host-agent daemon
 After=network-online.target
 
 [Service]
-ExecStart=/home/<user>/.local/bin/orc-host daemon --runtimes claude_code,codex
-Environment=ORC_BACKEND_URL=http://web.<user>.mesh.internal:8000
-Environment=ORC_ENROLL_SECRET=<ORC_ENROLL_SECRET>
+ExecStart=/home/<user>/.local/bin/librectl daemon --runtimes claude_code,codex
+Environment=LCTL_BACKEND_URL=http://web.<user>.mesh.internal:8000
+Environment=LCTL_ENROLL_SECRET=<LCTL_ENROLL_SECRET>
 Restart=always
 
 [Install]
@@ -516,7 +516,7 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable --now orc-host
+sudo systemctl enable --now librectl
 ```
 
 ---
@@ -524,20 +524,20 @@ sudo systemctl enable --now orc-host
 ## 8. Install the Universal MCP Bridge (Client Machine)
 
 ```bash
-pipx install ./connectors/orc-mcp
+pipx install ./connectors/librecontrol-mcp
 ```
 
 Set environment variables:
 
 ```bash
-export ORC_BACKEND_URL=https://<APP_DOMAIN>
-export ORC_CONNECTOR_TOKEN=<ORC_CONNECTOR_TOKEN>
+export LCTL_BACKEND_URL=https://<APP_DOMAIN>
+export LCTL_CONNECTOR_TOKEN=<LCTL_CONNECTOR_TOKEN>
 ```
 
 **Claude Code:**
 
 ```bash
-claude mcp add orc -- orc-mcp
+claude mcp add orc -- librecontrol-mcp
 ```
 
 **Cursor (`~/.cursor/mcp.json`):**
@@ -546,10 +546,10 @@ claude mcp add orc -- orc-mcp
 {
   "mcpServers": {
     "orc": {
-      "command": "orc-mcp",
+      "command": "librecontrol-mcp",
       "env": {
-        "ORC_BACKEND_URL": "https://<APP_DOMAIN>",
-        "ORC_CONNECTOR_TOKEN": "<ORC_CONNECTOR_TOKEN>"
+        "LCTL_BACKEND_URL": "https://<APP_DOMAIN>",
+        "LCTL_CONNECTOR_TOKEN": "<LCTL_CONNECTOR_TOKEN>"
       }
     }
   }
@@ -577,12 +577,12 @@ claude mcp add orc -- orc-mcp
    ```
 
 2. Trigger an `ask_human` from a tool call.
-3. Confirm the prompt appears on the configured platform (`ORC_PROMPT_*`) and
+3. Confirm the prompt appears on the configured platform (`LCTL_PROMPT_*`) and
    the response is forwarded back to the backend.
 
 ### 9c. Session observer
 
-On the 2nd machine (where orc-host is running), start a Claude Code session.
+On the 2nd machine (where librectl is running), start a Claude Code session.
 In the Django admin or via the API, confirm a new session entry appears with
 live output tailing.
 
@@ -627,7 +627,7 @@ live output tailing.
 - **`MESSAGING_GATEWAY_TOKEN`** authenticates the gateway to the backend.
   Treat it like a password — rotate by updating `.env` and restarting both
   `web` and `messaging-gateway`.
-- **`ORC_CONNECTOR_TOKEN`** is the shared secret for host-agents and MCP
+- **`LCTL_CONNECTOR_TOKEN`** is the shared secret for host-agents and MCP
   connectors. Rotate by updating `.env` and restarting `web`, `worker`, and
   all client installs.
 - **WhatsApp / Signal use unofficial protocols.**  Both platforms can ban

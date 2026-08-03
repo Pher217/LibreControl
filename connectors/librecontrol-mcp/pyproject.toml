@@ -1,7 +1,7 @@
 [project]
-name = "orc-mcp"
+name = "librecontrol-mcp"
 version = "0.1.0"
-description = "OpenRemote-Control universal MCP bridge — supervise any MCP-capable agent from your chat."
+description = "LibreControl universal MCP bridge — supervise any MCP-capable agent from your chat."
 requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.27",
@@ -10,7 +10,7 @@ dependencies = [
 ]
 
 [project.scripts]
-orc-mcp = "orc_mcp.server:main"
+librecontrol-mcp = "librecontrol_mcp.server:main"
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3"]
@@ -20,4 +20,4 @@ requires = ["hatchling>=1.20"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["orc_mcp"]
+packages = ["librecontrol_mcp"]

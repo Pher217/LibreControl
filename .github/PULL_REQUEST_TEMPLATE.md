@@ -1,4 +1,4 @@
-<!-- Thanks for contributing to OpenRemote Control! Please fill out the sections below. -->
+<!-- Thanks for contributing to LibreControl! Please fill out the sections below. -->
 
 ## Goal
 

@@ -29,7 +29,7 @@ def _mock_transport(status: int, body: dict | None = None) -> httpx.MockTranspor
 def tmp_config_env(tmp_path, monkeypatch):
     """Redirect config persistence to a temp directory."""
     cfg_file = tmp_path / "host.json"
-    monkeypatch.setenv("ORC_CONFIG_PATH", str(cfg_file))
+    monkeypatch.setenv("LCTL_CONFIG_PATH", str(cfg_file))
     return tmp_path
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Executable + importable stand-in for the codex binary speaking the JSONL
-event protocol. Used by tests via ORC_CODEX_BIN. Behavior controlled by
+event protocol. Used by tests via LCTL_CODEX_BIN. Behavior controlled by
 FAKE_CODEX_MODE env var: 'echo' (default), 'crash', or 'tool_step'.
 
 Called as: exec [resume <id>] --json --skip-git-repo-check [--sandbox <m>] <prompt>

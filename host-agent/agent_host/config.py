@@ -2,10 +2,10 @@
 config.py — HostConfig dataclass and JSON persistence.
 
 The config file lives at:
-  $XDG_CONFIG_HOME/openremote-control/host.json
-  (defaults to ~/.config/openremote-control/host.json)
+  $XDG_CONFIG_HOME/librecontrol/host.json
+  (defaults to ~/.config/librecontrol/host.json)
 
-An override path may be injected via the ORC_CONFIG_PATH environment variable —
+An override path may be injected via the LCTL_CONFIG_PATH environment variable —
 used by tests so they can write to a temp directory without touching the real
 config.  The file is written with mode 0o600 (owner-read/write only).
 """
@@ -30,17 +30,17 @@ def config_path() -> Path:
     """Return the path to the host config file.
 
     Resolution order:
-    1. ORC_CONFIG_PATH env var (test/override)
-    2. $XDG_CONFIG_HOME/openremote-control/host.json
-    3. ~/.config/openremote-control/host.json
+    1. LCTL_CONFIG_PATH env var (test/override)
+    2. $XDG_CONFIG_HOME/librecontrol/host.json
+    3. ~/.config/librecontrol/host.json
     """
-    override = os.environ.get("ORC_CONFIG_PATH")
+    override = os.environ.get("LCTL_CONFIG_PATH")
     if override:
         return Path(override)
 
     xdg = os.environ.get("XDG_CONFIG_HOME")
     base = Path(xdg) if xdg else Path.home() / ".config"
-    return base / "openremote-control" / "host.json"
+    return base / "librecontrol" / "host.json"
 
 
 def save(cfg: HostConfig) -> None:

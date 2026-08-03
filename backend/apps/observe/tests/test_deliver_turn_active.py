@@ -61,9 +61,9 @@ async def test_telegram_active_routes_through_telegram_path(settings):
     WHEN deliver_turn_active is called
     THEN the Telegram forum path is used (topic created, message sent) and no GatewayMessage is created.
     """
-    settings.ORC_MESSAGING_PLATFORM = "telegram"
+    settings.LCTL_MESSAGING_PLATFORM = "telegram"
     settings.TELEGRAM_FORUM_CHAT_ID = "-100111"
-    settings.ORC_PROMPT_CHAT_ID = ""
+    settings.LCTL_PROMPT_CHAT_ID = ""
 
     fake = _FakeTelegramApi()
     thread = await database_sync_to_async(_make_thread)(
@@ -90,10 +90,10 @@ async def test_whatsapp_active_creates_gateway_message(settings):
     THEN exactly one GatewayMessage is created for platform='whatsapp' with a session-label prefix;
     and the Telegram API is NOT called.
     """
-    settings.ORC_MESSAGING_PLATFORM = "whatsapp"
-    settings.ORC_PROMPT_WHATSAPP = "+41791234567"
+    settings.LCTL_MESSAGING_PLATFORM = "whatsapp"
+    settings.LCTL_PROMPT_WHATSAPP = "+41791234567"
     settings.TELEGRAM_FORUM_CHAT_ID = ""
-    settings.ORC_PROMPT_CHAT_ID = ""
+    settings.LCTL_PROMPT_CHAT_ID = ""
 
     thread = await database_sync_to_async(_make_thread)(
         "Swa00001", "/tmp/wa1.jsonl"
@@ -126,9 +126,9 @@ async def test_no_recipient_configured_is_noop(settings):
     WHEN deliver_turn_active is called
     THEN it returns without creating a GatewayMessage and without raising.
     """
-    settings.ORC_MESSAGING_PLATFORM = "telegram"
+    settings.LCTL_MESSAGING_PLATFORM = "telegram"
     settings.TELEGRAM_FORUM_CHAT_ID = ""
-    settings.ORC_PROMPT_CHAT_ID = ""
+    settings.LCTL_PROMPT_CHAT_ID = ""
 
     thread = await database_sync_to_async(_make_thread)(
         "Snoop001", "/tmp/noop1.jsonl"

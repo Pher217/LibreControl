@@ -18,12 +18,12 @@ from apps.core.auth import BearerTokenPermission
 class ConnectorSignatureAuthentication(BaseAuthentication):
     """Ed25519 per-connector request signature authentication (UC0).
 
-    A connector attaches five X-ORC-* headers to every request:
-      X-ORC-Connector-Id  — the connector's stable identity
-      X-ORC-Key-Id        — which key is signing (supports rotation)
-      X-ORC-Timestamp     — unix seconds (string); skew window ±300 s
-      X-ORC-Nonce         — random per-request token (replay protection)
-      X-ORC-Signature     — base64 Ed25519 signature over the canonical string
+    A connector attaches five X-LCTL-* headers to every request:
+      X-LCTL-Connector-Id  — the connector's stable identity
+      X-LCTL-Key-Id        — which key is signing (supports rotation)
+      X-LCTL-Timestamp     — unix seconds (string); skew window ±300 s
+      X-LCTL-Nonce         — random per-request token (replay protection)
+      X-LCTL-Signature     — base64 Ed25519 signature over the canonical string
 
     On success returns (ConnectorKey, None) as the principal.
     Returns None when the identifying headers are absent (fall through to legacy).
@@ -31,27 +31,27 @@ class ConnectorSignatureAuthentication(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        connector_id = request.META.get("HTTP_X_ORC_CONNECTOR_ID", "")
-        signature_b64 = request.META.get("HTTP_X_ORC_SIGNATURE", "")
+        connector_id = request.META.get("HTTP_X_LCTL_CONNECTOR_ID", "")
+        signature_b64 = request.META.get("HTTP_X_LCTL_SIGNATURE", "")
 
         # Both must be present for this authenticator to claim the request.
         if not connector_id or not signature_b64:
             return None
 
-        key_id = request.META.get("HTTP_X_ORC_KEY_ID", "")
-        ts = request.META.get("HTTP_X_ORC_TIMESTAMP", "")
-        nonce = request.META.get("HTTP_X_ORC_NONCE", "")
+        key_id = request.META.get("HTTP_X_LCTL_KEY_ID", "")
+        ts = request.META.get("HTTP_X_LCTL_TIMESTAMP", "")
+        nonce = request.META.get("HTTP_X_LCTL_NONCE", "")
 
         if not key_id or not ts or not nonce:
-            raise AuthenticationFailed("Missing X-ORC-Key-Id, X-ORC-Timestamp, or X-ORC-Nonce")
+            raise AuthenticationFailed("Missing X-LCTL-Key-Id, X-LCTL-Timestamp, or X-LCTL-Nonce")
 
         # Timestamp skew check — prevent replay of stale captures.
         try:
             ts_int = int(ts)
         except ValueError:
-            raise AuthenticationFailed("X-ORC-Timestamp must be an integer") from None
+            raise AuthenticationFailed("X-LCTL-Timestamp must be an integer") from None
         if abs(time.time() - ts_int) > 300:
-            raise AuthenticationFailed("X-ORC-Timestamp outside ±300 s window")
+            raise AuthenticationFailed("X-LCTL-Timestamp outside ±300 s window")
 
         # Nonce replay check — each nonce is accepted at most once per 300 s window.
         cache_key = f"connsig:{connector_id}:{nonce}"
@@ -94,7 +94,7 @@ class ConnectorBearerAuthentication(BaseAuthentication):
 
     LEGACY: superseded by ConnectorSignatureAuthentication (UC0).
     Kept for backward compatibility with connectors that still use the shared
-    ORC_CONNECTOR_TOKEN. Will be removed once all connectors migrate to Ed25519.
+    LCTL_CONNECTOR_TOKEN. Will be removed once all connectors migrate to Ed25519.
     """
 
     def authenticate(self, request):
@@ -109,13 +109,13 @@ class HasConnectorToken(BearerTokenPermission):
 
     Accepts requests that are EITHER:
     1. Authenticated via ConnectorSignatureAuthentication (Ed25519, UC0), OR
-    2. Carrying a valid ORC_CONNECTOR_TOKEN Bearer header (legacy, deprecated).
+    2. Carrying a valid LCTL_CONNECTOR_TOKEN Bearer header (legacy, deprecated).
 
-    Rejects with 503 if ORC_CONNECTOR_TOKEN is not configured AND the request
+    Rejects with 503 if LCTL_CONNECTOR_TOKEN is not configured AND the request
     is not signature-authenticated.
     """
 
-    settings_attr = "ORC_CONNECTOR_TOKEN"
+    settings_attr = "LCTL_CONNECTOR_TOKEN"
     unconfigured_flag = "_connector_token_unconfigured"
 
     def has_permission(self, request, view) -> bool:

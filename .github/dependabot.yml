@@ -29,9 +29,9 @@ updates:
       - dependency-name: "pytest"
         update-types: ["version-update:semver-major"]
 
-  # orc-mcp connector Python deps
+  # librecontrol-mcp connector Python deps
   - package-ecosystem: "pip"
-    directory: "/connectors/orc-mcp"
+    directory: "/connectors/librecontrol-mcp"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5

@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 def _queue_path() -> Path:
     xdg = os.environ.get("XDG_CONFIG_HOME")
     base = Path(xdg) if xdg else Path.home() / ".config"
-    return base / "openremote-control" / "queue.jsonl"
+    return base / "librecontrol" / "queue.jsonl"
 
 
 def run(cfg: HostConfig) -> None:

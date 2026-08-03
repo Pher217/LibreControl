@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# quickstart.sh — one-command setup for a local, single-machine OpenRemote Control.
+# quickstart.sh — one-command setup for a local, single-machine LibreControl.
 #
 # Brings up the whole backend stack in Docker (backend + Postgres + Valkey +
 # Telegram bot), generates all secrets, validates your bot token, auto-discovers
 # your Telegram chat, and enrolls this machine's host daemon. After it finishes,
-# run /openremote-control inside Claude Code.
+# run /librecontrol inside Claude Code.
 #
 # It cannot do three things for you (each takes ~30s):
 #   1. Install Docker.
@@ -82,8 +82,8 @@ PY
   }
   set_kv SECRET_KEY "$(gen_secret)"
   set_kv POSTGRES_PASSWORD "$(gen_secret)"
-  set_kv ORC_ENROLL_SECRET "$(gen_secret)"
-  set_kv ORC_CONNECTOR_TOKEN "$(gen_secret)"
+  set_kv LCTL_ENROLL_SECRET "$(gen_secret)"
+  set_kv LCTL_CONNECTOR_TOKEN "$(gen_secret)"
   set_kv MESSAGING_GATEWAY_TOKEN "$(gen_secret)"
   ok "Secrets generated (SECRET_KEY, POSTGRES_PASSWORD, enroll/connector/gateway tokens)"
 
@@ -134,10 +134,10 @@ EOF2
   done
   if [ -z "$FORUM_ID" ]; then
     warn "Could not auto-detect the group. You can fill these in deploy/.env later:"
-    warn "  TELEGRAM_FORUM_CHAT_ID, ORC_PROMPT_CHAT_ID (your group id), TELEGRAM_ALLOWED_CHAT_IDS (your user id)."
+    warn "  TELEGRAM_FORUM_CHAT_ID, LCTL_PROMPT_CHAT_ID (your group id), TELEGRAM_ALLOWED_CHAT_IDS (your user id)."
   else
     set_kv TELEGRAM_FORUM_CHAT_ID "$FORUM_ID"
-    set_kv ORC_PROMPT_CHAT_ID "$FORUM_ID"
+    set_kv LCTL_PROMPT_CHAT_ID "$FORUM_ID"
     [ -n "$USER_ID" ] && set_kv TELEGRAM_ALLOWED_CHAT_IDS "$USER_ID"
     ok "Group $FORUM_ID detected${USER_ID:+, you are user $USER_ID (allowlisted)}"
   fi
@@ -155,23 +155,23 @@ done
 
 # --- 5. enroll the local host daemon --------------------------------------
 say "Enrolling this machine's host daemon"
-ENROLL_SECRET="$(python3 -c 'import sys,re; [print(l.split("=",1)[1]) for l in open(sys.argv[1]) if l.startswith("ORC_ENROLL_SECRET=")]' "$ENV_FILE" | head -1)"
+ENROLL_SECRET="$(python3 -c 'import sys,re; [print(l.split("=",1)[1]) for l in open(sys.argv[1]) if l.startswith("LCTL_ENROLL_SECRET=")]' "$ENV_FILE" | head -1)"
 HOST_BIN=""
-if [ -x "$REPO_ROOT/host-agent/.venv/bin/orc-host" ]; then
-  HOST_BIN="$REPO_ROOT/host-agent/.venv/bin/orc-host"
-elif command -v orc-host >/dev/null 2>&1; then
-  HOST_BIN="$(command -v orc-host)"
+if [ -x "$REPO_ROOT/host-agent/.venv/bin/librectl" ]; then
+  HOST_BIN="$REPO_ROOT/host-agent/.venv/bin/librectl"
+elif command -v librectl >/dev/null 2>&1; then
+  HOST_BIN="$(command -v librectl)"
 fi
 
 # On a fresh clone host-agent is not installed yet. Install it here rather than
 # printing instructions and declaring success — the daemon is what actually
-# drives sessions, so without it /openremote-control cannot work.
+# drives sessions, so without it /librecontrol cannot work.
 if [ -z "$HOST_BIN" ]; then
   if command -v uv >/dev/null 2>&1; then
     say "Installing host-agent (uv sync)"
     if (cd "$REPO_ROOT/host-agent" && uv sync >/dev/null 2>&1); then
-      [ -x "$REPO_ROOT/host-agent/.venv/bin/orc-host" ] \
-        && HOST_BIN="$REPO_ROOT/host-agent/.venv/bin/orc-host"
+      [ -x "$REPO_ROOT/host-agent/.venv/bin/librectl" ] \
+        && HOST_BIN="$REPO_ROOT/host-agent/.venv/bin/librectl"
     else
       warn "uv sync failed in host-agent/."
     fi
@@ -190,7 +190,7 @@ if [ -n "$HOST_BIN" ] && [ -n "$ENROLL_SECRET" ]; then
     warn "Enrollment failed."
   fi
 elif [ -z "$ENROLL_SECRET" ]; then
-  warn "ORC_ENROLL_SECRET missing from $ENV_FILE — cannot enroll."
+  warn "LCTL_ENROLL_SECRET missing from $ENV_FILE — cannot enroll."
 fi
 
 # --- done -----------------------------------------------------------------
@@ -199,20 +199,20 @@ if [ "$HOST_READY" -eq 1 ]; then
   ok "Setup complete."
   echo
   say "Start the host daemon (keep this running while you drive sessions):"
-  echo "  ORC_HEADLESS_ENGINE=interactive $HOST_BIN daemon"
+  echo "  LCTL_HEADLESS_ENGINE=interactive $HOST_BIN daemon"
   echo
-  echo "  Then: open Claude Code and run  ${c_bold}/openremote-control${c_reset}"
+  echo "  Then: open Claude Code and run  ${c_bold}/librecontrol${c_reset}"
   echo "  Reply in your Telegram group to drive the session from your phone."
 else
   warn "Setup INCOMPLETE — the backend is up, but this machine is not enrolled."
-  echo "  /openremote-control will not work until the host daemon is enrolled."
+  echo "  /librecontrol will not work until the host daemon is enrolled."
   echo
   echo "  Finish with:"
   echo "    cd host-agent && uv sync && \\"
-  echo "      .venv/bin/orc-host enroll --backend $BACKEND_URL --secret \"\$ORC_ENROLL_SECRET\""
-  echo "    ORC_HEADLESS_ENGINE=interactive .venv/bin/orc-host daemon"
+  echo "      .venv/bin/librectl enroll --backend $BACKEND_URL --secret \"\$LCTL_ENROLL_SECRET\""
+  echo "    LCTL_HEADLESS_ENGINE=interactive .venv/bin/librectl daemon"
   echo
-  echo "  ORC_ENROLL_SECRET is in $ENV_FILE."
+  echo "  LCTL_ENROLL_SECRET is in $ENV_FILE."
 fi
 echo
 echo "  Stop the stack:  docker compose -f $COMPOSE_FILE down"

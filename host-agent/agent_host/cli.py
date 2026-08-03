@@ -33,7 +33,7 @@ def _cmd_daemon(args: argparse.Namespace) -> None:
     cfg = load()
     if cfg is None:
         print(
-            "Error: no config found. Run 'orc-host enroll' first.",
+            "Error: no config found. Run 'librectl enroll' first.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -61,7 +61,7 @@ def _cmd_headless(args: argparse.Namespace) -> None:
     cfg = load()
     if cfg is None:
         print(
-            "Error: no config found. Run 'orc-host enroll' first.",
+            "Error: no config found. Run 'librectl enroll' first.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -88,12 +88,12 @@ def _cmd_headless(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="orc-host",
-        description="OpenRemote Control host-agent daemon",
+        prog="librectl",
+        description="LibreControl host-agent daemon",
     )
     # dest must NOT be "command": the `run` subcommand has a positional named
     # "command", and a shared dest would let that positional overwrite the
-    # chosen subcommand name (so `orc-host run …` would dispatch to nothing).
+    # chosen subcommand name (so `librectl run …` would dispatch to nothing).
     sub = parser.add_subparsers(dest="subcommand", required=True)
 
     # --- enroll ---

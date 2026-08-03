@@ -69,7 +69,7 @@ function buildIndexHtml(enabledPlatforms: Set<string>): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="refresh" content="3">
-  <title>OpenRemote-Control — Connect your messaging app</title>
+  <title>LibreControl — Connect your messaging app</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #222; padding: 2rem; }
@@ -90,7 +90,7 @@ function buildIndexHtml(enabledPlatforms: Set<string>): string {
   </style>
 </head>
 <body>
-  <h1>OpenRemote-Control — Connect your messaging app</h1>
+  <h1>LibreControl — Connect your messaging app</h1>
   <div class="cards">
     ${cards}
   </div>

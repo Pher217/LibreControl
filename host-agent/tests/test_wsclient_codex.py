@@ -22,7 +22,7 @@ FAKE = os.path.join(os.path.dirname(__file__), "fake_codex.py")
 
 @pytest.fixture(autouse=True)
 def _clean_registries(monkeypatch):
-    monkeypatch.setenv("ORC_CODEX_BIN", FAKE)
+    monkeypatch.setenv("LCTL_CODEX_BIN", FAKE)
     monkeypatch.setenv("FAKE_CODEX_MODE", "echo")
     wsclient_module._codex_engines.clear()
     wsclient_module._headless_locks.clear()

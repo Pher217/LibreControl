@@ -1,7 +1,7 @@
 #!/bin/bash
-# Show orc-stack supervisor status + a backend health probe.
+# Show librecontrol-stack supervisor status + a backend health probe.
 DOM="gui/$(id -u)"
-for svc in com.openremote.daphne com.openremote.bot com.openremote.daemon; do
+for svc in com.librecontrol.daphne com.librecontrol.bot com.librecontrol.daemon; do
   line=$(launchctl print "$DOM/$svc" 2>/dev/null | grep -E "state =|pid =" | tr -d ' ' | paste -sd' ' -)
   echo "$svc: ${line:-not loaded}"
 done

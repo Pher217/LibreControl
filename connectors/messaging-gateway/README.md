@@ -1,7 +1,7 @@
 # orc-messaging-gateway
 
 A Node/TypeScript sidecar that bridges WhatsApp, Slack, Discord, Signal, and iMessage **directly**
-(no Matrix relay) to the OpenRemote-Control backend.
+(no Matrix relay) to the LibreControl backend.
 
 Inspired by [pi-messenger-bridge](https://github.com/tintinweb/pi-messenger-bridge) (MIT) —
 same library choices, fresh implementation decoupled from the `pi` agent.
@@ -20,7 +20,7 @@ same library choices, fresh implementation decoupled from the `pi` agent.
 
 ## Single messaging app of choice
 
-The backend is configured with a single `ORC_MESSAGING_PLATFORM` setting that
+The backend is configured with a single `LCTL_MESSAGING_PLATFORM` setting that
 names the one app where all notifications and approval prompts are delivered.
 `ENABLED_PLATFORMS` in this sidecar should match that choice — if the backend
 is set to `whatsapp`, set `ENABLED_PLATFORMS=whatsapp`.  Running additional
@@ -167,7 +167,7 @@ host.  Do not expose `SETUP_PORT` via Caddy or any public proxy.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `BACKEND_URL` | yes | — | Base URL of the ORC backend, e.g. `http://localhost:8000` |
+| `BACKEND_URL` | yes | — | Base URL of the LibreControl backend, e.g. `http://localhost:8000` |
 | `MESSAGING_GATEWAY_TOKEN` | yes | — | Bearer token — must match `MESSAGING_GATEWAY_TOKEN` configured in the backend |
 | `ENABLED_PLATFORMS` | no | `whatsapp,slack,discord` | Comma-separated list of platforms to activate |
 | `POLL_INTERVAL_MS` | no | `5000` | How often (ms) to poll each platform's outbox |

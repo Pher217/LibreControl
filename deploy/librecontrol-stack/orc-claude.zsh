@@ -1,7 +1,7 @@
 # orc-claude.zsh — make `claude` driveable + streaming in Telegram BY DEFAULT.
 #
 # Source this from ~/.zshrc:
-#     source <repo>/deploy/orc-stack/orc-claude.zsh
+#     source <repo>/deploy/librecontrol-stack/orc-claude.zsh
 #
 # Behaviour:
 #   claude               -> launches the REAL Claude inside an orc-owned tmux PTY
@@ -16,11 +16,11 @@
 # terminal have no PTY orc owns and can only be mirrored (👁), never driven. Routing
 # the launch through orc is the only way to make a session writable.
 #
-# Requires: tmux + the host-agent venv's orc-host (override path with $ORC_HOST_BIN).
+# Requires: tmux + the host-agent venv's librectl (override path with $LCTL_HOST_BIN).
 
-# Derive orc-host from this file's location (<repo>/deploy/orc-stack/orc-claude.zsh
-# -> <repo>/host-agent/.venv/bin/orc-host); override with $ORC_HOST_BIN.
-ORC_HOST_BIN="${ORC_HOST_BIN:-${${(%):-%x}:A:h:h:h}/host-agent/.venv/bin/orc-host}"
+# Derive librectl from this file's location (<repo>/deploy/librecontrol-stack/orc-claude.zsh
+# -> <repo>/host-agent/.venv/bin/librectl); override with $LCTL_HOST_BIN.
+LCTL_HOST_BIN="${LCTL_HOST_BIN:-${${(%):-%x}:A:h:h:h}/host-agent/.venv/bin/librectl}"
 
 claude() {
   emulate -L zsh
@@ -40,8 +40,8 @@ claude() {
   fi
 
   # Graceful degrade if the drive path is unavailable.
-  if [[ ! -x "$ORC_HOST_BIN" ]] || ! command -v tmux >/dev/null 2>&1; then
-    print -u2 "claude: orc-host/tmux unavailable — launching plain claude (not driveable)"
+  if [[ ! -x "$LCTL_HOST_BIN" ]] || ! command -v tmux >/dev/null 2>&1; then
+    print -u2 "claude: librectl/tmux unavailable — launching plain claude (not driveable)"
     "$real_claude"
     return
   fi
@@ -51,16 +51,16 @@ claude() {
   print -u2 "↗ orc session '$name' — driveable from Telegram (✏️). Detach: Ctrl-b d (keeps running)."
 
   # Background the orc ws/stream loop; it lives until the tmux session ends.
-  "$ORC_HOST_BIN" run --name "$name" --cwd "$PWD" "$real_claude" >"$logf" 2>&1 &
+  "$LCTL_HOST_BIN" run --name "$name" --cwd "$PWD" "$real_claude" >"$logf" 2>&1 &
   local orc_pid=$!
 
   # Wait for the tmux session to actually come up (poll, don't blind-sleep). Bail
-  # with the log path if orc-host dies early or the session never appears.
+  # with the log path if librectl dies early or the session never appears.
   local i
   for i in {1..20}; do
     tmux has-session -t "$name" 2>/dev/null && break
     kill -0 "$orc_pid" 2>/dev/null \
-      || { print -u2 "claude: orc-host exited before the session started — see $logf"; return 1; }
+      || { print -u2 "claude: librectl exited before the session started — see $logf"; return 1; }
     sleep 0.25
   done
   if ! tmux has-session -t "$name" 2>/dev/null; then
@@ -78,7 +78,7 @@ claude() {
 
   tmux attach -t "$name"
   # attach returned: either the user detached (session still alive, keep it running
-  # and Telegram-driveable) or Claude exited (orc-host self-terminates on stream EOF).
+  # and Telegram-driveable) or Claude exited (librectl self-terminates on stream EOF).
   # Either way, release the background job so the prompt returns immediately.
   disown "$orc_pid" 2>/dev/null
 }

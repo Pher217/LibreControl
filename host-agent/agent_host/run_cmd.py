@@ -1,4 +1,4 @@
-"""run_cmd.py — implementation of `orc-host run <command...>`."""
+"""run_cmd.py — implementation of `librectl run <command...>`."""
 
 from __future__ import annotations
 
@@ -135,7 +135,7 @@ def cmd_run(args):
     cfg = load()
     if cfg is None:
         print(
-            "Error: no config found. Run 'orc-host enroll' first.",
+            "Error: no config found. Run 'librectl enroll' first.",
             file=sys.stderr,
         )
         sys.exit(1)

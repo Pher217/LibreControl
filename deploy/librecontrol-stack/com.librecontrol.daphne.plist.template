@@ -2,15 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key><string>com.openremote.daemon</string>
+  <key>Label</key><string>com.librecontrol.daphne</string>
   <key>ProgramArguments</key>
   <array>
-    <string>@ORC_REPO@/deploy/orc-stack/run-daemon.sh</string>
+    <string>@LCTL_REPO@/deploy/librecontrol-stack/run-daphne.sh</string>
   </array>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>
   <key>ThrottleInterval</key><integer>10</integer>
-  <key>StandardOutPath</key><string>@ORC_LOGS@/daemon.log</string>
-  <key>StandardErrorPath</key><string>@ORC_LOGS@/daemon.log</string>
+  <key>StandardOutPath</key><string>@LCTL_LOGS@/daphne.log</string>
+  <key>StandardErrorPath</key><string>@LCTL_LOGS@/daphne.log</string>
 </dict>
 </plist>

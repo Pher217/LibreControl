@@ -3,7 +3,7 @@
 # CRITICAL: exactly one instance — two consumers steal each other's updates.
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$DIR/orc-stack.env"
-export PATH="$ORC_PATH_EXTRA:$PATH"
-cd "$ORC_REPO/backend"
-exec "$ORC_REPO/backend/.venv/bin/python" manage.py run_telegram_bot
+source "$DIR/librecontrol-stack.env"
+export PATH="$LCTL_PATH_EXTRA:$PATH"
+cd "$LCTL_REPO/backend"
+exec "$LCTL_REPO/backend/.venv/bin/python" manage.py run_telegram_bot
