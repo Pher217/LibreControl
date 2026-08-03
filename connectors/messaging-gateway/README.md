@@ -1,4 +1,4 @@
-# orc-messaging-gateway
+# librecontrol-messaging-gateway
 
 A Node/TypeScript sidecar that bridges WhatsApp, Slack, Discord, Signal, and iMessage **directly**
 (no Matrix relay) to the LibreControl backend.
