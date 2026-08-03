@@ -94,7 +94,7 @@ services:
     build:
       context: ../../connectors/messaging-gateway
       dockerfile: Dockerfile
-    image: orc-messaging-gateway:latest
+    image: librecontrol-messaging-gateway:latest
     restart: unless-stopped
     env_file: ../.env
     ports:
