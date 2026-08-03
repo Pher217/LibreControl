@@ -1,6 +1,6 @@
 # LibreControl
 
-[![CI](https://github.com/Pher217/OpenRemote-Control/actions/workflows/ci.yml/badge.svg)](https://github.com/Pher217/OpenRemote-Control/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE) [![Self-hosted](https://img.shields.io/badge/self--hosted-sovereign-6f42c1)](#why-its-different) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![GitHub stars](https://img.shields.io/github/stars/Pher217/OpenRemote-Control?style=social)](https://github.com/Pher217/OpenRemote-Control/stargazers)
+[![CI](https://github.com/Pher217/LibreControl/actions/workflows/ci.yml/badge.svg)](https://github.com/Pher217/LibreControl/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE) [![Self-hosted](https://img.shields.io/badge/self--hosted-sovereign-6f42c1)](#why-its-different) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md) [![GitHub stars](https://img.shields.io/github/stars/Pher217/LibreControl?style=social)](https://github.com/Pher217/LibreControl/stargazers)
 
 > One universal /remote-control for every coding agent you run — Claude Code, Codex, Gemini, Cursor, Copilot, and any MCP tool, across all your machines — centralized into the single chat app you choose (Telegram, WhatsApp, Slack, Signal, Discord…). Start, watch, and drive any session from your phone.
 
@@ -60,7 +60,7 @@ It starts a named session and pushes it out to your app of choice; from then on 
 
 Agents reach that same chat two ways:
 
-1. **Chat topics** — sessions are dispatched to a chat topic that both streams the turns and accepts input that drives the session ([PR #90](https://github.com/Pher217/OpenRemote-Control/pull/90)).
+1. **Chat topics** — sessions are dispatched to a chat topic that both streams the turns and accepts input that drives the session ([PR #90](https://github.com/Pher217/LibreControl/pull/90)).
 2. **The universal MCP bridge (`librecontrol-mcp`)** — a small MCP server you install into *any* MCP-capable tool (Cursor, Copilot, Codex, Claude Code, Kiro, …). It is purely a **dispatch tool**: the agent gains four calls that route through *your* backend into the same chat —
    - `librecontrol(name)` — start a session and dispatch it to your chat app
    - `notify(message)` — push progress to your chat
@@ -96,10 +96,10 @@ The backend and host-agent daemon are implemented and tested: **~1,000 tests pas
 **Shipped:**
 
 - Session dispatch to a **Telegram forum topic** via the universal **`/librecontrol`** command (the `librecontrol` librecontrol-mcp tool + a shipped Claude Code command)
-- **Bind-to-calling-session** — driving *this* Claude Code session from chat via `CLAUDE_CODE_SESSION_ID` ([PR #91](https://github.com/Pher217/OpenRemote-Control/pull/91))
-- **A scoped editor-turn mirror** with drive suppression, so typed-in-editor turns and chat-driven turns never double-post ([PR #93](https://github.com/Pher217/OpenRemote-Control/pull/93), [PR #94](https://github.com/Pher217/OpenRemote-Control/pull/94))
-- **A persistent interactive engine** (`LCTL_HEADLESS_ENGINE=interactive`) — one long-lived `claude -p` stream-json process per session, warm multi-turn replies, and restart survival ([PR #95](https://github.com/Pher217/OpenRemote-Control/pull/95), [PR #96](https://github.com/Pher217/OpenRemote-Control/pull/96))
-- **A bot liveness watchdog** so a stuck Telegram `getUpdates` consumer is caught and restarted ([PR #97](https://github.com/Pher217/OpenRemote-Control/pull/97))
+- **Bind-to-calling-session** — driving *this* Claude Code session from chat via `CLAUDE_CODE_SESSION_ID` ([PR #91](https://github.com/Pher217/LibreControl/pull/91))
+- **A scoped editor-turn mirror** with drive suppression, so typed-in-editor turns and chat-driven turns never double-post ([PR #93](https://github.com/Pher217/LibreControl/pull/93), [PR #94](https://github.com/Pher217/LibreControl/pull/94))
+- **A persistent interactive engine** (`LCTL_HEADLESS_ENGINE=interactive`) — one long-lived `claude -p` stream-json process per session, warm multi-turn replies, and restart survival ([PR #95](https://github.com/Pher217/LibreControl/pull/95), [PR #96](https://github.com/Pher217/LibreControl/pull/96))
+- **A bot liveness watchdog** so a stuck Telegram `getUpdates` consumer is caught and restarted ([PR #97](https://github.com/Pher217/LibreControl/pull/97))
 - **The universal MCP bridge** — `apps.connectors` backend + the installable [`librecontrol-mcp`](connectors/librecontrol-mcp/README.md) client
 - **Telegram** surface + the **messaging-gateway** connector (→ WhatsApp / Slack / Discord / Signal / iMessage)
 - **Multi-host** backend (`apps.hostlink`) + a **host daemon client** (`host-agent`: `librectl enroll | daemon`)

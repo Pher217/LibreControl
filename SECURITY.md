@@ -15,10 +15,10 @@ Only the latest minor version within a supported major line receives security pa
 
 Report privately using **GitHub's private vulnerability reporting**:
 
-1. Go to the [Security tab](https://github.com/Pher217/OpenRemote-Control/security) of this repository.
+1. Go to the [Security tab](https://github.com/Pher217/LibreControl/security) of this repository.
 2. Click **Report a vulnerability** to open a private security advisory visible only to the maintainers.
 
-This keeps the report confidential until a fix is released. If private reporting is unavailable to you, open a regular [GitHub issue](https://github.com/Pher217/OpenRemote-Control/issues/new) that says only "requesting a security contact" — **without any vulnerability details** — and a maintainer will follow up.
+This keeps the report confidential until a fix is released. If private reporting is unavailable to you, open a regular [GitHub issue](https://github.com/Pher217/LibreControl/issues/new) that says only "requesting a security contact" — **without any vulnerability details** — and a maintainer will follow up.
 
 If you do not receive an acknowledgment within **48 hours**, or the issue is critical, add a comment to your advisory (or follow-up issue) prefixed with `[URGENT]`.
 
