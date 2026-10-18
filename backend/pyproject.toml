@@ -31,7 +31,7 @@ dev = [
     "factory-boy>=3.3",
     # ruff/bandit are pinned to a minor range: they gate CI (blocking steps), and an
     # unpinned floor lets a new release silently turn CI red with no code change.
-    "ruff>=0.15,<0.17",
+    "ruff>=0.15,<0.18",
     "mypy>=1.11",
     "bandit[toml]>=1.9,<2",
     "coverage>=7.6",
